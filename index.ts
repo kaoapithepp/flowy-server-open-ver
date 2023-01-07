@@ -4,6 +4,8 @@ import cors from 'cors';
 
 import { connectMySQLDB } from './config/configDB';
 
+const userRoutes =  require('./routes/user.route');
+
 // invoke dependencies
 dotenv.config();
 const app: Express = express();
@@ -21,9 +23,12 @@ app.use(express.urlencoded({
 
 app.use(cors());
 
+// apply routes
+app.use('/api/user', userRoutes);
+
 
 // assign server port
-app.get('/api', (req: Request, res: Response) => {
+app.get('/', (req: Request, res: Response) => {
     res.send("API is working successfully!");
 });
 

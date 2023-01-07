@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const db = mysql.createConnection({
+export const db = mysql.createConnection({
     host: process.env.AWS_RDS_HOST,
     port: Number(process.env.AWS_RDS_PORT),
     user: process.env.AWS_RDS_USER,
@@ -15,7 +15,7 @@ export const connectMySQLDB = () => db.connect( err => {
     if(err) {
         console.log(err.message);
         return;
+    } else {
+        console.log("Amazon RDS is connected successfully!");
     }
-
-    console.log("Amazon RDS is connected successfully!");
 });
