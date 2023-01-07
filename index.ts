@@ -2,10 +2,14 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
+import { connectMySQLDB } from './config/configDB';
+
 // invoke dependencies
 dotenv.config();
 const app: Express = express();
+connectMySQLDB();
 
+// configuration
 app.use(express.json({
     limit: "30mb"
 }));
@@ -17,7 +21,9 @@ app.use(express.urlencoded({
 
 app.use(cors());
 
-app.get('/', (req: Request, res: Response) => {
+
+// assign server port
+app.get('/api', (req: Request, res: Response) => {
     res.send("API is working successfully!");
 });
 
