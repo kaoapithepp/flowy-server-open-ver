@@ -5,14 +5,14 @@ const router = express.Router();
 import { userValidate } from '../middlewares/user.validate';
 
 // controllers
-import { signUp, getAllUsers } from '../controllers/user.controller';
+import { signUp, signIn, getAllUsers } from '../controllers/user.controller';
 
-router.route('/get').get(getAllUsers);
+router.route('/').get(getAllUsers);
 
 // sign-up
 router.route('/sign-up').post(userValidate, signUp);
 
 // sign-in
-router.route('/sign-in').post();
+router.route('/sign-in').post(userValidate, signIn);
 
 module.exports = router;

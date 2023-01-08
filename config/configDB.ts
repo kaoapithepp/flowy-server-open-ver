@@ -11,11 +11,8 @@ export const db = mysql.createConnection({
     database: process.env.AWS_RDS_DB
 });
 
-export const connectMySQLDB = () => db.connect( err => {
-    if(err) {
-        console.log(err.message);
-        return;
-    } else {
-        console.log("Amazon RDS is connected successfully!");
-    }
-});
+
+export const connectMySQLDB = db.connect(err => {
+    if (err) console.log(err.message);
+    console.log("Amazon RDS is connected completely!");
+})

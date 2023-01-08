@@ -2,14 +2,11 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
-import { connectMySQLDB } from './config/configDB';
-
 const userRoutes =  require('./routes/user.route');
 
 // invoke dependencies
 dotenv.config();
 const app: Express = express();
-connectMySQLDB();
 
 // configuration
 app.use(express.json({
