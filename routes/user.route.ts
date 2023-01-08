@@ -5,13 +5,15 @@ const router = express.Router();
 import { userValidate } from '../middlewares/user.validate';
 
 // controllers
-import { signUp } from '../controllers/user.controller';
+import { getAllUsers, signUp, signIn } from '../controllers/user.controller';
 
-router.route('/get').get((req, res, next) => {
-    res.send("It's ok!")
-})
+// get all users
+router.route('/').get(getAllUsers);
 
 // sign-up
 router.route('/sign-up').post(userValidate, signUp);
+
+// sign-in
+router.route('/sign-in').post(signIn);
 
 module.exports = router;

@@ -33,7 +33,7 @@ export const signUp = (req: Request, res: Response, next: NextFunction ) => {
             bcrypt.hash(password, 10, (err, hash) => {
                 const create_query = `
                     INSERT INTO users (user_id, first_name, last_name, email, password, tel_no, createAt)
-                    VALUES ('${uuid()}', '${first_name}', '${last_name}', '${email}', '${hash}', '${tel_no}', CONVERT_TZ(now(), '+00:00', '+07:00'))
+                    VALUES ('${uuid()}', '${first_name}', '${last_name}', '${email}', '${hash}', '${tel_no}', '${new Date()}')
                 `;
 
                 db.query(create_query, (err, result) => {
@@ -48,4 +48,20 @@ export const signUp = (req: Request, res: Response, next: NextFunction ) => {
         }
     });
     
+}
+
+export const signIn = (req: Request, res: Response, next: NextFunction) => {
+    
+}
+
+// get all user
+export const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
+    const getAllUsersQuery = `
+        SELECT *
+        FROM users
+    `;
+
+    db.query(getAllUsersQuery, (err, result) => {
+        res.status(200).send(result);
+    });
 }
