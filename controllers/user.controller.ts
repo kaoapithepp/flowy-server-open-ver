@@ -14,21 +14,18 @@ export const signUp = (req: Request, res: Response, next: NextFunction ) => {
             password,
             tel_no } = req.body;
 
-    const query = `
-        SELECT id
+    const email_check_query = `
+        SELECT user_id
         FROM users
         WHERE LOWER(email) = LOWER(${email})
     `;
 
-    db.query(query, (err, result) => {
-        console.log(result);
+    db.query(email_check_query, (err, result) => {
         // if user exists
         if(result){
-
             return res.status(409).send({
-                message: "Username is already used."
+                message: "Username is already in used."
             });
-
         } else {
             bcrypt.hash(password, 10, (err, hash) => {
                 const create_query = `
@@ -37,7 +34,9 @@ export const signUp = (req: Request, res: Response, next: NextFunction ) => {
                 `;
 
                 db.query(create_query, (err, result) => {
-                    if(err) res.send(err.message);
+                    if(err) res.send({ 
+                        message: err.message
+                    });
                     
                     return res.status(201).send({
                         message: "Account is signed up successfully!"
@@ -48,4 +47,14 @@ export const signUp = (req: Request, res: Response, next: NextFunction ) => {
         }
     });
     
+}
+
+export const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
+    const get_all_users_query = `
+        SELECT *
+        FROM users
+    `;
+    db.query(get_all_users_query, (err, result) => {
+        res.send(result);
+    });
 }
