@@ -3,10 +3,16 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 const userRoutes =  require('./routes/user.route');
+const flowiderRoutes = require('./routes/flowider.route');
 
 // invoke dependencies
 dotenv.config();
 const app: Express = express();
+
+// ECONNREFUSED prevention
+process.on('uncaughtException', (err) => {
+    console.log(err);
+});
 
 // configuration
 app.use(express.json({
@@ -22,6 +28,7 @@ app.use(cors());
 
 // apply routes
 app.use('/api/user', userRoutes);
+app.use('/api/flowider', flowiderRoutes);
 
 
 // assign server port

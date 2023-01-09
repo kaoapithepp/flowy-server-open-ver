@@ -3,8 +3,12 @@ import bcrypt from 'bcrypt';
 import { uuid } from 'uuidv4';
 
 import { db }  from '../config/configDB';
-import generateToken from '../utils/generateToken';
+
+// interfaces
 import { IUser } from '../interfaces/iuser.interface';
+
+// uitls
+import generateToken from '../utils/generateToken';
 
 // sign-up
 export const signUp = (req: Request, res: Response, next: NextFunction ) => {
@@ -56,6 +60,7 @@ export const signIn = (req: Request, res: Response, next: NextFunction) => {
         FROM users
         WHERE email = ${db.escape(email)}
     `;
+    
     db.query<IUser[]>(checkEmailQuery, (err, result) => {
         if (err) {
             throw err;
@@ -70,6 +75,13 @@ export const signIn = (req: Request, res: Response, next: NextFunction) => {
 
         bcrypt.compare(password, result[0]["password"], (bcErr, bcRes) => {
             if (bcErr) throw bcErr.message;
+
+            if (!bcRes) {
+                res.status(403).send({
+                    status: "invalid",
+                    message: "Wrong password!"
+                })
+            }
 
             if (bcRes) {
                 return res.status(200).send({
@@ -95,5 +107,4 @@ export const getAllUsers =  (req: Request, res: Response, next: NextFunction) =>
 
         res.status(201).send(result);
     });
-    
 }

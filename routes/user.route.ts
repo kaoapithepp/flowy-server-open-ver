@@ -7,6 +7,7 @@ import { userValidate } from '../middlewares/user.validate';
 // controllers
 import { signUp, signIn, getAllUsers } from '../controllers/user.controller';
 
+// get all users
 router.route('/').get(getAllUsers);
 
 // sign-up
