@@ -4,6 +4,7 @@ import cors from 'cors';
 
 const userRoutes =  require('./routes/user.route');
 const flowiderRoutes = require('./routes/flowider.route');
+const placeRoutes = require('./routes/place.route');
 
 // invoke dependencies
 dotenv.config();
@@ -29,6 +30,7 @@ app.use(cors());
 // apply routes
 app.use('/api/user', userRoutes);
 app.use('/api/flowider', flowiderRoutes);
+app.use('/api/place', placeRoutes);
 
 
 // assign server port

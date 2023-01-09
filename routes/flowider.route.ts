@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 
 // validators
-import { userValidate } from '../middlewares/user.validate';
+import { emailValidate } from '../middlewares/email.validate';
 
 // controllers
 import { flowiderSignUp,
@@ -13,9 +13,9 @@ import { flowiderSignUp,
 router.route('/').get(getAllFlowiders);
 
 // sign-up
-router.route('/sign-up').post(userValidate, flowiderSignUp);
+router.route('/sign-up').post(emailValidate, flowiderSignUp);
 
 // sign-in
-router.route('/sign-in').post(userValidate, flowiderSignIn);
+router.route('/sign-in').post(emailValidate, flowiderSignIn);
 
 module.exports = router;
