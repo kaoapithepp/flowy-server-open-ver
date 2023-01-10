@@ -1,3 +1,4 @@
+import { Request, RequestHandler } from "express";
 import { RowDataPacket } from "mysql2";
 
 export interface IFlowider extends RowDataPacket {
@@ -12,4 +13,8 @@ export interface IFlowider extends RowDataPacket {
     tel_no: string;
     createAt: string;
     img_url: string;
+};
+
+export interface IFlowiderAuthInfoRequest extends Request, IFlowider {
+    user?: any;
 }

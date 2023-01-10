@@ -5,7 +5,7 @@ const router = express.Router();
 import protect from '../middlewares/flowider.authorization';
 
 // controllers
-import { getAllPlace,
+import { getAllOwnPlace,
          getPlaceById,
          createPlace } from '../controllers/place.controller';
 
