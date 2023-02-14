@@ -1,14 +1,16 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { connectDB } from './config/configDB';
 
-const userRoutes =  require('./routes/user.route');
-const flowiderRoutes = require('./routes/flowider.route');
-const placeRoutes = require('./routes/place.route');
+// const userRoutes =  require('./routes/user.route');
+// const flowiderRoutes = require('./routes/flowider.route');
+// const placeRoutes = require('./routes/place.route');
 
 // invoke dependencies
 dotenv.config();
 const app: Express = express();
+connectDB();
 
 // ECONNREFUSED prevention
 process.on('uncaughtException', (err) => {
@@ -28,9 +30,9 @@ app.use(express.urlencoded({
 app.use(cors());
 
 // apply routes
-app.use('/api/user', userRoutes);
-app.use('/api/flowider', flowiderRoutes);
-app.use('/api/place', placeRoutes);
+// app.use('/api/user', userRoutes);
+// app.use('/api/flowider', flowiderRoutes);
+// app.use('/api/place', placeRoutes);
 
 
 // assign server port

@@ -1,18 +1,33 @@
-import mysql from 'mysql2';
+import { Sequelize } from 'sequelize'; 
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const db = mysql.createConnection({
-    host: process.env.AWS_RDS_HOST,
-    port: Number(process.env.AWS_RDS_PORT),
-    user: process.env.AWS_RDS_USER,
-    password: process.env.AWS_RDS_PASSWORD,
-    database: process.env.AWS_RDS_DB
-});
+
+export const sequelize = new Sequelize(
+    `${process.env.GCP_SQL_DB}`,
+    `${process.env.GCP_SQL_USER}`,
+    `${process.env.GCP_SQL_PASSWORD}`,
+    {
+        host: process.env.GCP_SQL_HOST,
+        port: Number(process.env.GCP_SQL_PORT),
+        dialect: 'mysql',
+        pool: {
+            acquire: 50000,
+            idle: 30000
+        }
+    }
+);
+
+export const connectDB = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('Google Cloud SQL has been established successfully.');
+        sequelize.close();
+    } catch (error) {
+        console.error('Unable to connect to the database:', error);
+    }
+};
 
 
-export const connectMySQLDB = db.connect(err => {
-    if (err) console.log(err.message);
-    console.log("Amazon RDS is connected completely!");
-})
+
