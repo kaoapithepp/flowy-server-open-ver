@@ -5,7 +5,7 @@ import { connectDB } from './config/configDB';
 
 // import * as userRoutes from "./routes/user.route";
 const userRoutes =  require('./routes/user.route');
-// const flowiderRoutes = require('./routes/flowider.route');
+const flowiderRoutes = require('./routes/flowider.route');
 // const placeRoutes = require('./routes/place.route');
 
 // invoke dependencies
@@ -38,7 +38,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // apply routes
 app.use('/api/v1/user', userRoutes);
-// app.use('/api/flowider', flowiderRoutes);
+app.use('/api/v1/flowider', flowiderRoutes);
 // app.use('/api/place', placeRoutes);
 
 const PORT = process.env.PORT || 5000;

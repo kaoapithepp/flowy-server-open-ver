@@ -1,7 +1,7 @@
-import { Request, RequestHandler } from "express";
-import { RowDataPacket } from "mysql2";
+import { Request } from "express";
+import { Model } from "sequelize";
 
-export interface IFlowider extends RowDataPacket {
+export interface IFlowider extends Model {
     id?: number;
     flowider_id: string;
     first_name: string;
@@ -15,6 +15,8 @@ export interface IFlowider extends RowDataPacket {
     img_url: string;
 };
 
-export interface IFlowiderAuthInfoRequest extends Request, IFlowider {
+export interface IFlowiderAuth extends IFlowider {
     user?: any;
 }
+
+export type CombinedIFlowider = Request & IFlowiderAuth;

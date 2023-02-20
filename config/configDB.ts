@@ -25,8 +25,9 @@ export const sequelize = new Sequelize(
 export const connectDB = async () => {
     try {
         await sequelize.authenticate();
-        console.log('AWS RDS has been established successfully.');
-        sequelize.close();
+        await sequelize.sync({ alter: true });
+        console.log('AWS RDS has been established and synced successfully.');
+        // sequelize.close();
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }

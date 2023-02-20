@@ -2,24 +2,24 @@ import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 
 // models
-import User from "../models/User.model";
+import Flowider from "../models/Flowider.model";
 
 // utils
 import generateToken from "../utils/generateToken";
 
-export async function registerUserController(req: Request, res: Response) {
+export async function registerFlowiderController(req: Request, res: Response) {
     try {
         const { email, password, tel_no } = req.body;
 
-        const isUserExist = await User.findOne({
+        const isFlowderExist = await Flowider.findOne({
             where: { email: email }
         });
 
         // validations
-        if(isUserExist) throw new Error("Username already exists!");
+        if(isFlowderExist) throw new Error("Flowider account already exists!");
         if(!password || !tel_no) throw new Error("Please provide all necessary information completely.");
 
-        const user = await User.create({
+        const flowider = await Flowider.create({
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             password: await bcrypt.hash(req.body.password, 10),
@@ -28,33 +28,33 @@ export async function registerUserController(req: Request, res: Response) {
             cc_card: req.body.cc_card
         });
 
-        if(user){
+        if(flowider){
             // development
-            res.status(201).json(user);
+            res.status(201).json(flowider);
         } else {
             res.status(400);
             throw new Error("Bad request!");
         }
 
-        console.log(user);
+        console.log(flowider);
 
     } catch(err: any) {
         throw new Error(err);
     }
 }
 
-export async function loginUserController(req: Request, res: Response){
+export async function loginFlowiderController(req: Request, res: Response){
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({
+        const flowider = await Flowider.findOne({
             where: { email: email }
         });
 
         // validations
-        if(!user) throw new Error("Username doesn't exist!");
-        if(user){
-            bcrypt.compare(password, user["password"], (bcErr, bcRes) => {
+        if(!flowider) throw new Error("Username doesn't exist!");
+        if(flowider){
+            bcrypt.compare(password, flowider["password"], (bcErr, bcRes) => {
                 if (bcErr) throw bcErr.message;
 
                 if (!bcRes) {
@@ -67,9 +67,9 @@ export async function loginUserController(req: Request, res: Response){
                 if (bcRes) {
                     return res.status(201).send({
                         status: "ok",
-                        token: generateToken(user["user_id"]),
+                        token: generateToken(flowider["flowider_id"]),
                         // development
-                        flowiderInfo: user
+                        flowiderInfo: flowider
                     })
                 }
             })
@@ -80,26 +80,24 @@ export async function loginUserController(req: Request, res: Response){
     
 }
 
-export async function getUserByIdController(req: Request, res: Response) {
+export async function getFlowiderByIdController(req: Request, res: Response) {
     console.log();
-    const user = await User.findOne({
+    const flowider = await Flowider.findOne({
         attributes: { exclude: ['password'] }, 
-        where: { user_id: (req as any).user.user_id } 
+        where: { flowider_id: (req as any).user.flowider_id } 
     });
 
-    if(!user) throw new Error("Username doesn't exist!");
-    if(user){
-        res.status(200).json(user);
+    if(!flowider) throw new Error("Flowider account doesn't exist!");
+    if(flowider){
+        res.status(200).json(flowider);
     }
 }
 
-export async function getAllUserController(req: Request, res: Response) {
+export async function getAllFlowiderController(req: Request, res: Response) {
     try {
-        const allUsers = await User.findAll();
+        const allFlowiders = await Flowider.findAll();
 
-        console.log(allUsers)
-
-        res.status(200).json(allUsers);
+        res.status(200).json(allFlowiders);
         
     } catch(err: any) {
         throw new Error(err);

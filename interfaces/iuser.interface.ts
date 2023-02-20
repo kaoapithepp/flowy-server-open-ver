@@ -1,6 +1,7 @@
-import { RowDataPacket } from "mysql2";
+import { Request } from "express";
+import { Model } from "sequelize";
 
-export interface IUser extends RowDataPacket {
+export interface IUser extends Model {
     id: number;
     email: string;
     password: string;
@@ -9,3 +10,9 @@ export interface IUser extends RowDataPacket {
     last_name: string;
     tel_no: string;
 }
+
+export interface IUserAuth extends IUser {
+    user?: any;
+}
+
+export type CombinedIUser = Request & IUserAuth;
