@@ -3,26 +3,29 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-
 export const sequelize = new Sequelize(
-    `${process.env.GCP_SQL_DB}`,
-    `${process.env.GCP_SQL_USER}`,
-    `${process.env.GCP_SQL_PASSWORD}`,
+    `${process.env.AWS_RDS_DB}`,
+    `${process.env.AWS_RDS_USER}`,
+    `${process.env.AWS_RDS_PASSWORD}`,
     {
-        host: process.env.GCP_SQL_HOST,
-        port: Number(process.env.GCP_SQL_PORT),
+        host: process.env.AWS_RDS_HOST,
+        port: Number(process.env.AWS_RDS_PORT),
         dialect: 'mysql',
         pool: {
             acquire: 50000,
             idle: 30000
-        }
+        },
+        dialectOptions: {
+            ssl: "Amazon RDS"
+        },
+        logging: console.log,
     }
 );
 
 export const connectDB = async () => {
     try {
         await sequelize.authenticate();
-        console.log('Google Cloud SQL has been established successfully.');
+        console.log('AWS RDS has been established successfully.');
         sequelize.close();
     } catch (error) {
         console.error('Unable to connect to the database:', error);

@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { connectDB } from './config/configDB';
 
-// const userRoutes =  require('./routes/user.route');
+// import * as userRoutes from "./routes/user.route";
+const userRoutes =  require('./routes/user.route');
 // const flowiderRoutes = require('./routes/flowider.route');
 // const placeRoutes = require('./routes/place.route');
 
@@ -14,7 +15,8 @@ connectDB();
 
 // ECONNREFUSED prevention
 process.on('uncaughtException', (err) => {
-    console.log(err);
+    console.log(err.message);
+    process.exit(1);
 });
 
 // configuration
@@ -29,16 +31,15 @@ app.use(express.urlencoded({
 
 app.use(cors());
 
-// apply routes
-// app.use('/api/user', userRoutes);
-// app.use('/api/flowider', flowiderRoutes);
-// app.use('/api/place', placeRoutes);
-
-
 // assign server port
 app.get('/', (req: Request, res: Response) => {
     res.send("API is working successfully!");
 });
+
+// apply routes
+app.use('/api/v1/user', userRoutes);
+// app.use('/api/flowider', flowiderRoutes);
+// app.use('/api/place', placeRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
