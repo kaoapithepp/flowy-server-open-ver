@@ -5,12 +5,6 @@ import { sequelize } from "../config/configDB";
 import { IUser } from "../interfaces/iuser.interface";
 
 const User = sequelize.define<IUser>('User', {
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false,
-    },
     user_id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,

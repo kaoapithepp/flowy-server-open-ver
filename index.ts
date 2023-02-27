@@ -6,7 +6,8 @@ import { connectDB } from './config/configDB';
 // import * as userRoutes from "./routes/user.route";
 const userRoutes =  require('./routes/user.route');
 const flowiderRoutes = require('./routes/flowider.route');
-// const placeRoutes = require('./routes/place.route');
+const placeRoutes = require('./routes/place.route');
+const backdoorRoutes = require('./routes/backdoor.route');
 
 // invoke dependencies
 dotenv.config();
@@ -39,7 +40,9 @@ app.get('/', (req: Request, res: Response) => {
 // apply routes
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/flowider', flowiderRoutes);
-// app.use('/api/place', placeRoutes);
+app.use('/api/v1/place', placeRoutes);
+// backdoor
+app.use('/api/backdoor', backdoorRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -36,7 +36,7 @@ export async function registerFlowiderController(req: Request, res: Response) {
             throw new Error("Bad request!");
         }
 
-        console.log(flowider);
+        // console.log(flowider);
 
     } catch(err: any) {
         throw new Error(err);
@@ -81,7 +81,6 @@ export async function loginFlowiderController(req: Request, res: Response){
 }
 
 export async function getFlowiderByIdController(req: Request, res: Response) {
-    console.log();
     const flowider = await Flowider.findOne({
         attributes: { exclude: ['password'] }, 
         where: { flowider_id: (req as any).user.flowider_id } 

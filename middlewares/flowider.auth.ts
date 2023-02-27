@@ -28,7 +28,7 @@ export async function flowiderAuth(req: Request, res: Response, next: NextFuncti
     if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
         try {
             token = req.headers.authorization.split(" ")[1];
-            // console.log('Splited:' + token);
+            // console.log('Splitted:' + token);
             
             const decoded = jwt.verify(token, `${process.env.JWT_SECRET}`) as JwtPayload;
             // console.log('Decoded:' + decoded.id);

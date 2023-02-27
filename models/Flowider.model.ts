@@ -5,12 +5,6 @@ import { sequelize } from "../config/configDB";
 import { IFlowider } from "../interfaces/iflowider.interface";
 
 const Flowider = sequelize.define<IFlowider>('Flowider', {
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false,
-    },
     flowider_id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
