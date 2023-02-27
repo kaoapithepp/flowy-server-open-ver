@@ -6,19 +6,9 @@ import dotenv from "dotenv";
 import User from "../models/User.model";
 
 // interface
-import { CombinedIUser } from "../interfaces/iuser.interface";
+import { JwtPayload, CustomRequest } from "../interfaces/iauth.interface";
 
 dotenv.config();
-
-interface JwtPayload {
-    id: string
-}
-
-interface CustomRequest extends CombinedIUser {
-    token: string | jwt.JwtPayload;
-    user?: any;
-}
-
 
 export async function userAuth(req: Request, res: Response, next: NextFunction) {
     let token;

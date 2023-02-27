@@ -2,48 +2,35 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../config/configDB";
 
 // associates
-import Flowider from "./Flowider.model";
+import Place from "./Place.model";
 
-const Place = sequelize.define('Place', {
-    place_id: {
+const Desk = sequelize.define('Desk', {
+    desk_id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
         allowNull: false,
-        unique: 'place_id'
+        unique: 'desk_id'
     },
-    place_name: {
+    desk_name: {
         type: DataTypes.STRING,
-        allowNull: false
-    },
-    lat_geo: {
-        type: DataTypes.DOUBLE,
-        allowNull: false
-    },
-    long_geo: {
-        type: DataTypes.DOUBLE,
         allowNull: false
     },
     description: {
         type: DataTypes.TEXT,
         allowNull: true
     },
-    place_category: {
-        type: DataTypes.ENUM('House/Privates', 'Hotel', 'Cafe'),
-        defaultValue: 'House/Privates',
+    desk_type: {
+        type: DataTypes.ENUM('a', 'b', 'c'),
+        defaultValue: 'a',
         allowNull: false
     },
-    unit_price: {
+    min_seat: {
         type: DataTypes.INTEGER,
-        defaultValue: 60,
-        allowNull: false
+        allowNull: false,
     },
-    open_hr: {
-        type: DataTypes.TIME,
-        allowNull: false
-    },
-    close_hr: {
-        type: DataTypes.TIME,
+    max_seat: {
+        type: DataTypes.INTEGER,
         allowNull: false
     }
 },{
@@ -54,9 +41,9 @@ const Place = sequelize.define('Place', {
 });
 
 // association declaration
-Flowider.hasMany(Place, {
+Place.hasMany(Desk, {
     foreignKey: {
-        name: 'flowider_id',
+        name: 'place_id',
         type: DataTypes.UUID,
         allowNull: false
     },
@@ -64,6 +51,6 @@ Flowider.hasMany(Place, {
     onUpdate: 'CASCADE',
     hooks: true
 });
-Place.belongsTo(Flowider);
+Desk.belongsTo(Place);
 
-export default Place;
+export default Desk;

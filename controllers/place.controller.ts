@@ -50,25 +50,16 @@ export async function createPlaceController(req: Request, res: Response) {
             FROM Place
             JOIN Amenity ON Place.place_id = Amenity.place_id
             JOIN Specification ON Place.place_id = Specification.place_id
-            `
+            WHERE Place.place_id = ?
+            `, {
+                replacements: [(createdPlace as any).place_id]
+            }
         );
-
-        if(!createdPlace){
-            res.status(400).send("Creating place is unsuccessful!");
-        }
-
-        if(!createAmenity){
-            res.status(400).send("Input amenities are unsuccessful!");
-        }
-
-        if(!createSpec){
-            res.status(400).send("Input specs are unsuccessful!");
-        }
 
         if(createdPlace && createAmenity && createSpec) {
             res.status(201).json({
                 status: "Place has been created successfully!",
-                info: results[0]
+                info: results
             });
         }
 
@@ -88,7 +79,7 @@ export async function getAllBelongPlaceController(req: Request, res: Response) {
         }
         
         if(allBelongPlace) {
-            res.status(201).json(allBelongPlace);
+            res.status(200).json(allBelongPlace);
         }
         
     } catch(err: any) {
@@ -120,12 +111,9 @@ export async function deletePlaceByIdController(req: Request, res: Response) {
     try {
         const placeId = req.params.id;
         const result = await Place.destroy({
-            where: { place_id: placeId }
+            where: { place_id: placeId },
+            force: true
         });
-
-        if(!result){
-            throw new Error("Can't delete, Place not found!");
-        }
 
         if(result) {
             res.status(201).json({
@@ -143,7 +131,7 @@ export async function getAllPlacesNoAuthController(req: Request, res: Response) 
         const result = await Place.findAll();
 
         if(result) {
-            res.status(201).json(result);
+            res.status(200).json(result);
         }
         
     } catch(err: any) {

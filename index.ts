@@ -7,6 +7,7 @@ import { connectDB } from './config/configDB';
 const userRoutes =  require('./routes/user.route');
 const flowiderRoutes = require('./routes/flowider.route');
 const placeRoutes = require('./routes/place.route');
+const deskRoutes = require('./routes/desk.route');
 const backdoorRoutes = require('./routes/backdoor.route');
 
 // invoke dependencies
@@ -41,6 +42,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/flowider', flowiderRoutes);
 app.use('/api/v1/place', placeRoutes);
+app.use('/api/v1/desk', deskRoutes);
 // backdoor
 app.use('/api/backdoor', backdoorRoutes);
 

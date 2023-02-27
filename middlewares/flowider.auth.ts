@@ -6,19 +6,9 @@ import dotenv from "dotenv";
 import Flowider from "../models/Flowider.model";
 
 // interface
-import { CombinedIFlowider } from "../interfaces/iflowider.interface";
+import { JwtPayload, CustomRequest } from "../interfaces/iauth.interface";
 
 dotenv.config();
-
-interface JwtPayload {
-    id: string
-}
-
-interface CustomRequest extends CombinedIFlowider {
-    token: string | jwt.JwtPayload;
-    user?: any;
-}
-
 
 export async function flowiderAuth(req: Request, res: Response, next: NextFunction) {
     let token;
