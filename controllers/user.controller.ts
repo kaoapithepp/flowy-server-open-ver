@@ -4,8 +4,12 @@ import bcrypt from "bcrypt";
 // models
 import User from "../models/User.model";
 
+// interfaces
+import { IUser } from "../interfaces/iuser.interface";
+
 // utils
 import generateToken from "../utils/generateToken";
+import { uploadImage } from "../utils/uploadImage";
 
 export async function registerUserController(req: Request, res: Response) {
     try {
@@ -103,5 +107,33 @@ export async function getAllUserController(req: Request, res: Response) {
         
     } catch(err: any) {
         throw new Error(err);
+    }
+}
+
+export async function uploadProfileImageUserController(req: Request, res: Response, next: NextFunction){
+    try {
+        const user_id = req.params.id;
+        const imageURIs: string[] | any = await uploadImage(req, res, next);
+        
+        if(!imageURIs){
+            res.status(401).json("Something went wrong.");
+        }
+
+        const updatedUser = await User.findOne<IUser>({
+            where: { user_id: user_id }
+        });
+
+        if(updatedUser){
+            (updatedUser as IUser).profile_imgUrl = imageURIs[0];
+
+            await updatedUser.save();
+
+            res.status(201).json({
+                message: "Your attachment has been upload successfully.",
+            });
+        }
+
+    } catch(err: any) {
+        throw new Error(err.message);
     }
 }

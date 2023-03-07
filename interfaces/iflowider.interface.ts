@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Model } from "sequelize";
+import { Model, ModelCtor } from "sequelize";
 
 export interface IFlowider extends Model {
     id?: number;
@@ -12,7 +12,7 @@ export interface IFlowider extends Model {
     bnk_name: string;
     tel_no: string;
     createAt: string;
-    img_url: string;
+    profile_imgUrl: string;
 };
 
 export interface IFlowiderAuth extends IFlowider {

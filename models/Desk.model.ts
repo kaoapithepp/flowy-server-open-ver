@@ -20,9 +20,9 @@ const Desk = sequelize.define('Desk', {
         type: DataTypes.TEXT,
         allowNull: true
     },
-    desk_type: {
-        type: DataTypes.ENUM('a', 'b', 'c'),
-        defaultValue: 'a',
+    isHotDesk: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
         allowNull: false
     },
     min_seat: {

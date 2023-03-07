@@ -5,6 +5,9 @@ import { sequelize } from "../config/configDB";
 import Place from "../models/Place.model";
 import Amenity from "../models/Amenity.model";
 import Specification from "../models/Specification.model";
+import { uploadImage } from "../utils/uploadImage";
+import ImagePool from "../models/ImagePool.model";
+import { imageList } from "../utils/imageList";
 
 export async function createPlaceController(req: Request, res: Response) {
     try {
@@ -68,6 +71,38 @@ export async function createPlaceController(req: Request, res: Response) {
     }
 }
 
+export async function uploadPlaceImagesController(req: Request, res: Response, next: NextFunction){
+    try {
+        const place_id = req.params.id;
+        const imageURIs: string[] | any = await uploadImage(req, res, next);
+        
+        if(!imageURIs){
+            res.status(401).json("Something went wrong.");
+        }
+
+        const placeImageIntoPool = await Promise.all(
+            imageURIs.map((file: any) => {
+                const insertImagePool = ImagePool.create({
+                    img_uri: file,
+                    owner_id: place_id,
+                    owner_type: "place"
+                });
+
+                return insertImagePool;
+            })
+        )
+
+        if(placeImageIntoPool){
+            res.status(201).json({
+                message: "Your attachment has been upload successfully.",
+            });
+        }
+
+    } catch(err: any) {
+        throw new Error(err.message);
+    }
+}
+
 export async function getAllBelongPlaceController(req: Request, res: Response) {
     try {
         const allBelongPlace = await Place.findAll({
@@ -79,7 +114,27 @@ export async function getAllBelongPlaceController(req: Request, res: Response) {
         }
         
         if(allBelongPlace) {
-            res.status(200).json(allBelongPlace);
+            const mappedAllBelongPlace = allBelongPlace.map(async (place: any) => {
+                const resultPlaceImages = await ImagePool.findAll({
+                    where: { 
+                        owner_id: place.place_id,
+                        owner_type: "place"
+                    }
+                })
+                return {
+                    place_id: place.place_id,
+                    place_name: place.place_name,
+                    lat_geo: place.lat_geo,
+                    long_geo: place.long_geo,
+                    description: place.description,
+                    place_category: place.place_category,
+                    unit_price: place.unit_price,
+                    open_hr: place.open_hr,
+                    close_hr: place.close_hr,
+                    image: imageList(resultPlaceImages as [], "img_uri")
+                }
+            });
+            res.status(200).json(mappedAllBelongPlace);
         }
         
     } catch(err: any) {
@@ -90,16 +145,33 @@ export async function getAllBelongPlaceController(req: Request, res: Response) {
 export async function getPlaceByIdController(req: Request, res: Response) {
     try {
         const placeId = req.params.id;
-        const result = await Place.findOne({
+        const resultPlace: any = await Place.findOne({
             where: { place_id: placeId }
         });
 
-        if(!result){
+        if(!resultPlace){
             throw new Error("Place not found!");
         }
 
-        if(result) {
-            res.status(201).json(result)
+        if(resultPlace) {
+            const resultPlaceImages = await ImagePool.findAll({
+                where: { 
+                    owner_id: placeId,
+                    owner_type: "place"
+                }
+            })
+            res.status(201).json({
+                place_id: resultPlace.place_id,
+                place_name: resultPlace.place_name,
+                lat_geo: resultPlace.lat_geo,
+                long_geo: resultPlace.long_geo,
+                description: resultPlace.description,
+                place_category: resultPlace.place_category,
+                unit_price: resultPlace.unit_price,
+                open_hr: resultPlace.open_hr,
+                close_hr: resultPlace.close_hr,
+                image: imageList(resultPlaceImages as [], "img_uri")
+            });
         }
         
     } catch(err: any) {

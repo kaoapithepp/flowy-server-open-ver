@@ -6,6 +6,8 @@ import Flowider from "../models/Flowider.model";
 
 // utils
 import generateToken from "../utils/generateToken";
+import { uploadImage } from "../utils/uploadImage";
+import { IFlowider } from "../interfaces/iflowider.interface";
 
 export async function registerFlowiderController(req: Request, res: Response) {
     try {
@@ -42,6 +44,35 @@ export async function registerFlowiderController(req: Request, res: Response) {
         throw new Error(err);
     }
 }
+
+export async function uploadProfileImageFlowiderController(req: Request, res: Response, next: NextFunction){
+    try {
+        const flowider_id = req.params.id;
+        const imageURIs: string[] | any = await uploadImage(req, res, next);
+        
+        if(!imageURIs){
+            res.status(401).json("Something went wrong.");
+        }
+
+        const updatedFlowider = await Flowider.findOne<IFlowider>({
+            where: { flowider_id: flowider_id }
+        });
+
+        if(updatedFlowider){
+            (updatedFlowider as IFlowider).profile_imgUrl = imageURIs[0];
+
+            await updatedFlowider.save();
+
+            res.status(201).json({
+                message: "Your attachment has been upload successfully.",
+            });
+        }
+
+    } catch(err: any) {
+        throw new Error(err.message);
+    }
+}
+    
 
 export async function loginFlowiderController(req: Request, res: Response){
     try {
