@@ -113,30 +113,31 @@ export async function getAllBelongPlaceController(req: Request, res: Response) {
             throw new Error("Not found!");
         }
         
-        if(allBelongPlace) {
-            const mappedAllBelongPlace = allBelongPlace.map(async (place: any) => {
-                const resultPlaceImages = await ImagePool.findAll({
-                    where: { 
-                        owner_id: place.place_id,
-                        owner_type: "place"
-                    }
-                })
-                return {
-                    place_id: place.place_id,
-                    place_name: place.place_name,
-                    lat_geo: place.lat_geo,
-                    long_geo: place.long_geo,
-                    description: place.description,
-                    place_category: place.place_category,
-                    unit_price: place.unit_price,
-                    open_hr: place.open_hr,
-                    close_hr: place.close_hr,
-                    image: imageList(resultPlaceImages as [], "img_uri")
+      
+        Promise.all(allBelongPlace.map(async (place: any, key, arr) => {
+            const resultPlaceImages = await ImagePool.findAll({
+                where: { 
+                    owner_id: place.place_id,
+                    owner_type: "place"
                 }
-            });
-            res.status(200).json(mappedAllBelongPlace);
-        }
-        
+            })
+
+            return {
+                place_id: place.place_id,
+                place_name: place.place_name,
+                lat_geo: place.lat_geo,
+                long_geo: place.long_geo,
+                description: place.description,
+                place_category: place.place_category,
+                unit_price: place.unit_price,
+                open_hr: place.open_hr,
+                close_hr: place.close_hr,
+                image: imageList(resultPlaceImages as [], "img_uri")
+            }
+        })).then(elem => {
+            res.status(200).send(elem);
+        });
+
     } catch(err: any) {
         throw new Error(err);
     }
@@ -154,6 +155,15 @@ export async function getPlaceByIdController(req: Request, res: Response) {
         }
 
         if(resultPlace) {
+            const resultSpecs = await Specification.findOne({
+                attributes: ['isQuiet', 'isSmokable'],
+                where: { place_id: resultPlace.place_id }
+            });
+
+            const resultAmenities = await Amenity.findOne({
+                where: { place_id: resultPlace.place_id }
+            });
+            
             const resultPlaceImages = await ImagePool.findAll({
                 where: { 
                     owner_id: placeId,
@@ -170,6 +180,8 @@ export async function getPlaceByIdController(req: Request, res: Response) {
                 unit_price: resultPlace.unit_price,
                 open_hr: resultPlace.open_hr,
                 close_hr: resultPlace.close_hr,
+                spec: resultSpecs,
+                amenity: resultAmenities,
                 image: imageList(resultPlaceImages as [], "img_uri")
             });
         }
@@ -200,10 +212,38 @@ export async function deletePlaceByIdController(req: Request, res: Response) {
 
 export async function getAllPlacesNoAuthController(req: Request, res: Response) {
     try {
-        const result = await Place.findAll();
+        const queryResult = await Place.findAll();
 
-        if(result) {
-            res.status(200).json(result);
+        if(queryResult) {
+            Promise.all(queryResult.map(async (place: any, key, arr) => {
+                const resultSpecs = await Specification.findOne({
+                    attributes: ['isQuiet', 'isSmokable'],
+                    where: { place_id: place.place_id }
+                });
+                
+                const resultPlaceImages = await ImagePool.findAll({
+                    where: { 
+                        owner_id: place.place_id,
+                        owner_type: "place"
+                    }
+                });
+    
+                return {
+                    place_id: place.place_id,
+                    place_name: place.place_name,
+                    lat_geo: place.lat_geo,
+                    long_geo: place.long_geo,
+                    description: place.description,
+                    place_category: place.place_category,
+                    unit_price: place.unit_price,
+                    open_hr: place.open_hr,
+                    close_hr: place.close_hr,
+                    spec: resultSpecs,
+                    image: imageList(resultPlaceImages as [], "img_uri")
+                }
+            })).then(elem => {
+                res.status(200).send(elem);
+            });
         }
         
     } catch(err: any) {

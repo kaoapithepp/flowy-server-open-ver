@@ -4,17 +4,24 @@ const router = express.Router();
 import {createDeskController,
         deleteDeskByIdController,
         getAllDesksNoAuthController,
-        getDeskByIdController } from "../controllers/desk.controller";
+        getDeskByIdController, 
+        uploadDeskImagesController} from "../controllers/desk.controller";
 
 // auth
 import { flowiderAuth } from "../middlewares/flowider.auth";
 
-// create new desk
-router.route("/:place_id").post(flowiderAuth, createDeskController);
-
+// utils
+import { upload } from "../utils/uploadImage";
 
 /* NO AUTH: get all desk */
 router.route("/all").get(getAllDesksNoAuthController);
+
+/* AUTH */
+// create new desk
+router.route("/:place_id").post(flowiderAuth, createDeskController);
+
+// upload desk images
+router.route("/desk-img/:id").post(flowiderAuth, upload.array("image"), uploadDeskImagesController);
 
 /* By ID */
 // get

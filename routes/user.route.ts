@@ -18,11 +18,12 @@ router.route("/").post(registerUserController);
 // log in
 router.route("/login").post(loginUserController);
 
+/* NO AUTH: get all flowiders */
+router.route("/all").get(getAllUserController);
+
+/* AUTH */
 // upload profile images
 router.route("/profile-img/:id").put(userAuth, upload.array("image"), uploadProfileImageUserController);
-
-// get all users
-router.route("/all").get(getAllUserController);
 
 // get user by user's id
 router.route("/").get(userAuth, getUserByIdController);

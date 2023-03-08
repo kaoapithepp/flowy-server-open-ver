@@ -14,6 +14,10 @@ import { flowiderAuth } from "../middlewares/flowider.auth";
 
 import { upload } from "../utils/uploadImage";
 
+/* NO AUTH: get all places */
+router.route("/all").get(getAllPlacesNoAuthController);
+
+/* AUTH */
 // create place
 router.route("/").post(flowiderAuth, createPlaceController);
 
@@ -23,8 +27,6 @@ router.route("/").get(flowiderAuth, getAllBelongPlaceController);
 // upload profile images
 router.route("/place-img/:id").post(flowiderAuth, upload.array("image"), uploadPlaceImagesController);
 
-/* NO AUTH: get all places */
-router.route("/all").get(getAllPlacesNoAuthController);
 
 /* By ID */
 // get
