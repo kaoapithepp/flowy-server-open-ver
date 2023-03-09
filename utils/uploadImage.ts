@@ -3,13 +3,13 @@ import { uuid } from "uuidv4";
 import multer from "multer";
 
 // firebase
-import { getStorage, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { getStorage, ref, getDownloadURL, uploadBytesResumable, deleteObject } from "firebase/storage";
 import firebaseApp from "../config/firebase.config";
 
 export const upload = multer({ storage: multer.memoryStorage() });
 
 // initialize Cloud Storage and get the service
-const storage = getStorage(firebaseApp);
+export const storage = getStorage(firebaseApp);
 
 export async function uploadImage(req: Request, res: Response, next: NextFunction) {
     const files = req.files;
@@ -37,4 +37,16 @@ export async function uploadImage(req: Request, res: Response, next: NextFunctio
     } catch (err: any) {
         throw new Error(err.message);
     }
+}
+
+export async function deleteImage(imageURI: any){
+    const deleteRef = ref(storage, imageURI);
+
+    deleteObject(deleteRef)
+    .then(res => {
+        return;
+    })
+    .catch(err => {
+        throw new Error(err.message);
+    })
 }

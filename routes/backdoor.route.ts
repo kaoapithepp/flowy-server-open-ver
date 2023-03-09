@@ -3,6 +3,7 @@ import express from "express";
 const router = express.Router();
 
 import {    getAllAmenityBackdoor,
+            getAllImagesBackdoor,
             getAllSpecBackdoor } from "../controllers/backdoor.controller";
 
 // utils
@@ -16,6 +17,9 @@ router.route("/all-am").get(getAllAmenityBackdoor);
 
 // get all amenities
 router.route("/all-spec").get(getAllSpecBackdoor);
+
+// get all images
+router.route("/all-image").get(getAllImagesBackdoor);
 
 // test: upload images
 router.route("/upload").post(upload.array("image"), uploadImage);

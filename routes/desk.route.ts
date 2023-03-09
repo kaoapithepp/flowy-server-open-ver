@@ -3,6 +3,7 @@ const router = express.Router();
 
 import {createDeskController,
         deleteDeskByIdController,
+        getAllDesksByPlaceIdController,
         getAllDesksNoAuthController,
         getDeskByIdController, 
         uploadDeskImagesController} from "../controllers/desk.controller";
@@ -19,13 +20,14 @@ router.route("/all").get(getAllDesksNoAuthController);
 /* AUTH */
 // create new desk
 router.route("/:place_id").post(flowiderAuth, createDeskController);
-
 // upload desk images
 router.route("/desk-img/:id").post(flowiderAuth, upload.array("image"), uploadDeskImagesController);
 
 /* By ID */
-// get
+// get each desk
 router.route("/:id").get(flowiderAuth, getDeskByIdController);
+// get all desk by placeId
+router.route("/by-place/:placeId").get(flowiderAuth, getAllDesksByPlaceIdController);
 // delete
 router.route("/:id").delete(flowiderAuth, deleteDeskByIdController);
 

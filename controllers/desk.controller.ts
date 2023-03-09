@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
+import { Op } from "sequelize";
 
 // models
 import Desk from "../models/Desk.model";
 import ImagePool from "../models/ImagePool.model";
 
 // utils
-import { uploadImage } from "../utils/uploadImage";
+import { deleteImage, uploadImage } from "../utils/uploadImage";
 import { imageList } from "../utils/imageList";
 
 export async function createDeskController(req: Request, res: Response) {
@@ -91,7 +92,7 @@ export async function getDeskByIdController(req: Request, res: Response) {
             })
             res.status(201).json({
                 desk_id: resultDesk.desk_id,
-                desk_name: resultDesk.place_name,
+                desk_name: resultDesk.desk_name,
                 description: resultDesk.description,
                 isHotDesk: resultDesk.isHotDesk,
                 min_seat: resultDesk.min_seat,
@@ -108,16 +109,87 @@ export async function getDeskByIdController(req: Request, res: Response) {
 export async function deleteDeskByIdController(req: Request, res: Response) {
     try {
         const deskId = req.params.id;
-        const result = await Desk.destroy({
-            where: { desk_id: deskId },
-            force: true
+        const result = await Desk.findOne({
+            where: { desk_id: deskId }
         });
 
+        console.log(result);
+
         if(result) {
+            const images = await ImagePool.findAll({
+                where: {
+                    owner_id: deskId,
+                    owner_type: "desk"
+                }
+            })
+
+            Promise.all(images.map(async (image: any, key) => {
+                deleteImage(image.img_uri);
+            }))
+
+            ImagePool.destroy({
+                where: {
+                    owner_id: deskId,
+                    owner_type: "desk"
+                },
+                force: true
+            })
+            
+            await Desk.destroy({
+                where: { desk_id: deskId },
+                force: true
+            })
+
             res.status(201).json({
-                message: "Desk has been deleted completely."
+                message: "Desk has completely been deleted."
             })
         }
+    } catch(err: any) {
+        throw new Error(err.message);
+    }
+}
+
+export async function getAllDesksByPlaceIdController(req: Request, res: Response) {
+    const place_id = req.params.placeId;
+    const customerAmount = req.query.ctm;
+
+    try {
+        const resultDesksByPlaceId = await Desk.findAll({
+            where: { 
+                place_id: place_id,
+                max_seat: {
+                    [Op.gte]: customerAmount
+                } 
+            }
+        });
+
+        if(resultDesksByPlaceId) {
+            Promise.all(resultDesksByPlaceId.map(async (desk: any, key) => {
+                const resultDeskImages = await ImagePool.findAll({
+                    where: { 
+                        owner_id: desk.desk_id,
+                        owner_type: "desk"
+                    }
+                })
+
+                return {
+                    desk_id: desk.desk_id,
+                    desk_name: desk.desk_name,
+                    description: desk.description,
+                    isHotDesk: desk.isHotDesk,
+                    min_seat: desk.min_seat,
+                    max_seat: desk.max_seat,
+                    place_id: desk.place_id,
+                    image: imageList(resultDeskImages as [], "img_uri")
+                }
+            }))
+            .then(elem => {
+                res.status(200).json(elem);
+            })
+
+        }
+
+        
     } catch(err: any) {
         throw new Error(err.message);
     }

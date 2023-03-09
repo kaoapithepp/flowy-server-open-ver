@@ -5,8 +5,10 @@ import { sequelize } from "../config/configDB";
 import Place from "../models/Place.model";
 import Amenity from "../models/Amenity.model";
 import Specification from "../models/Specification.model";
-import { uploadImage } from "../utils/uploadImage";
 import ImagePool from "../models/ImagePool.model";
+
+// utils
+import { deleteImage, uploadImage } from "../utils/uploadImage";
 import { imageList } from "../utils/imageList";
 
 export async function createPlaceController(req: Request, res: Response) {
@@ -132,6 +134,7 @@ export async function getAllBelongPlaceController(req: Request, res: Response) {
                 unit_price: place.unit_price,
                 open_hr: place.open_hr,
                 close_hr: place.close_hr,
+                work_hr: Number(place.close_hr.substr(0,2)) - Number(place.open_hr.substr(0,2)),
                 image: imageList(resultPlaceImages as [], "img_uri")
             }
         })).then(elem => {
@@ -180,6 +183,7 @@ export async function getPlaceByIdController(req: Request, res: Response) {
                 unit_price: resultPlace.unit_price,
                 open_hr: resultPlace.open_hr,
                 close_hr: resultPlace.close_hr,
+                work_hr: Number(resultPlace.close_hr.substr(0,2)) - Number(resultPlace.open_hr.substr(0,2)),
                 spec: resultSpecs,
                 amenity: resultAmenities,
                 image: imageList(resultPlaceImages as [], "img_uri")
@@ -194,12 +198,35 @@ export async function getPlaceByIdController(req: Request, res: Response) {
 export async function deletePlaceByIdController(req: Request, res: Response) {
     try {
         const placeId = req.params.id;
-        const result = await Place.destroy({
-            where: { place_id: placeId },
-            force: true
+        const result = await Place.findOne({
+            where: { place_id: placeId }
         });
 
         if(result) {
+            const images = await ImagePool.findAll({
+                where: {
+                    owner_id: placeId,
+                    owner_type: "place"
+                }
+            })
+
+            Promise.all(images.map(async (image: any, key) => {
+                deleteImage(image.img_uri);
+            }))
+
+            await ImagePool.destroy({
+                where: {
+                    owner_id: placeId,
+                    owner_type: "place"
+                },
+                force: true
+            })
+
+            await Place.destroy({
+                where: { place_id: placeId },
+                force: true
+            })
+
             res.status(201).json({
                 message: "Place has completely been deleted."
             })
@@ -238,6 +265,7 @@ export async function getAllPlacesNoAuthController(req: Request, res: Response) 
                     unit_price: place.unit_price,
                     open_hr: place.open_hr,
                     close_hr: place.close_hr,
+                    work_hr: Number(place.close_hr.substr(0,2)) - Number(place.open_hr.substr(0,2)),
                     spec: resultSpecs,
                     image: imageList(resultPlaceImages as [], "img_uri")
                 }
