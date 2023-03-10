@@ -28,10 +28,10 @@ export async function flowiderAuth(req: Request, res: Response, next: NextFuncti
             next();
 
         } catch(err: any) {
-            throw new Error("Not authorized, token failed.");
+            res.status(403).send("Not authorized, token failed.");
         }
     }
 
     // no token
-    if(!token) throw new Error("Not authorized, no token.");
+    if(!token) res.status(404).send("Not authorized, no token.");
 }

@@ -20,8 +20,8 @@ export async function registerUserController(req: Request, res: Response) {
         });
 
         // validations
-        if(isUserExist) throw new Error("Username already exists!");
-        if(!password || !tel_no) throw new Error("Please provide all necessary information completely.");
+        if(isUserExist) res.status(400).send("Username already exists!");
+        if(!password || !tel_no) res.status(400).send("Please provide all necessary information completely.");
 
         const user = await User.create({
             first_name: req.body.first_name,
@@ -36,14 +36,13 @@ export async function registerUserController(req: Request, res: Response) {
             // development
             res.status(201).json(user);
         } else {
-            res.status(400);
-            throw new Error("Bad request!");
+            res.status(400).send("Bad request!");
         }
 
         console.log(user);
 
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -56,7 +55,7 @@ export async function loginUserController(req: Request, res: Response){
         });
 
         // validations
-        if(!user) throw new Error("Username doesn't exist!");
+        if(!user) res.status(404).send("Username doesn't exist!");
         if(user){
             bcrypt.compare(password, user["password"], (bcErr, bcRes) => {
                 if (bcErr) throw bcErr.message;
@@ -79,7 +78,7 @@ export async function loginUserController(req: Request, res: Response){
             })
         }
     } catch (err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
     
 }
@@ -91,7 +90,7 @@ export async function getUserByIdController(req: Request, res: Response) {
         where: { user_id: (req as any).user.user_id } 
     });
 
-    if(!user) throw new Error("Username doesn't exist!");
+    if(!user) res.status(404).send("Username doesn't exist!");
     if(user){
         res.status(200).json(user);
     }
@@ -106,7 +105,7 @@ export async function getAllUserController(req: Request, res: Response) {
         res.status(200).json(allUsers);
         
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -134,6 +133,6 @@ export async function uploadProfileImageUserController(req: Request, res: Respon
         }
 
     } catch(err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }

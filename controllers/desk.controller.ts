@@ -39,7 +39,7 @@ export async function createDeskController(req: Request, res: Response) {
         }
 
     } catch(err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -71,7 +71,7 @@ export async function uploadDeskImagesController(req: Request, res: Response, ne
         }
 
     } catch(err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -83,7 +83,7 @@ export async function getDeskByIdController(req: Request, res: Response) {
         });
 
         if(!resultDesk){
-            throw new Error("Place not found!");
+            res.status(404).send("Place not found!");
         }
 
         if(resultDesk) {
@@ -105,7 +105,7 @@ export async function getDeskByIdController(req: Request, res: Response) {
         }
 
     } catch(err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -146,7 +146,7 @@ export async function deleteDeskByIdController(req: Request, res: Response) {
             })
         }
     } catch(err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -192,7 +192,7 @@ export async function getAllDesksByPlaceIdController(req: Request, res: Response
 
         
     } catch(err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -203,6 +203,6 @@ export async function getAllDesksNoAuthController(req: Request, res: Response) {
         res.status(200).json(results);
         
     } catch(err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }

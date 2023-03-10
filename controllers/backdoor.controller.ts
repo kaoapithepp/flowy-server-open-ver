@@ -15,7 +15,7 @@ export async function getAllAmenityBackdoor(req: Request, res: Response) {
         }
         
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -28,7 +28,7 @@ export async function getAllSpecBackdoor(req: Request, res: Response) {
         }
         
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -41,6 +41,6 @@ export async function getAllImagesBackdoor(req: Request, res: Response) {
         }
         
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }

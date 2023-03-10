@@ -22,6 +22,6 @@ export async function getAllTimeSlotByDeskId(req: Request, res: Response) {
         res.status(200).send(resultsTimeslot);
 
     } catch(err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }

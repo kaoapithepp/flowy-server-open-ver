@@ -69,7 +69,7 @@ export async function createPlaceController(req: Request, res: Response) {
         }
 
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -101,7 +101,7 @@ export async function uploadPlaceImagesController(req: Request, res: Response, n
         }
 
     } catch(err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -112,7 +112,7 @@ export async function getAllBelongPlaceController(req: Request, res: Response) {
         });
 
         if(!allBelongPlace) {
-            throw new Error("Not found!");
+            res.status(404).send("Not found!");
         }
         
       
@@ -142,7 +142,7 @@ export async function getAllBelongPlaceController(req: Request, res: Response) {
         });
 
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -154,7 +154,7 @@ export async function getPlaceByIdController(req: Request, res: Response) {
         });
 
         if(!resultPlace){
-            throw new Error("Place not found!");
+            res.status(404).send("Place not found!");
         }
 
         if(resultPlace) {
@@ -191,7 +191,7 @@ export async function getPlaceByIdController(req: Request, res: Response) {
         }
         
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -233,7 +233,7 @@ export async function deletePlaceByIdController(req: Request, res: Response) {
         }
         
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -275,6 +275,6 @@ export async function getAllPlacesNoAuthController(req: Request, res: Response) 
         }
         
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 };

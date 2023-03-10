@@ -27,6 +27,6 @@ export const makingStripePayment = async (req: Request, res: Response) => {
             clientSecret: clientSecret.client_secret
         });
     } catch (err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }

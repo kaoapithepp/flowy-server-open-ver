@@ -18,8 +18,8 @@ export async function registerFlowiderController(req: Request, res: Response) {
         });
 
         // validations
-        if(isFlowderExist) throw new Error("Flowider account already exists!");
-        if(!password || !tel_no) throw new Error("Please provide all necessary information completely.");
+        if(isFlowderExist) res.status(400).send("Flowider account already exists!");
+        if(!password || !tel_no) res.status(400).send("Please provide all necessary information completely.");
 
         const flowider = await Flowider.create({
             first_name: req.body.first_name,
@@ -34,14 +34,11 @@ export async function registerFlowiderController(req: Request, res: Response) {
             // development
             res.status(201).json(flowider);
         } else {
-            res.status(400);
-            throw new Error("Bad request!");
+            res.status(400).send("Bad request!");
         }
 
-        // console.log(flowider);
-
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }
 
@@ -69,7 +66,7 @@ export async function uploadProfileImageFlowiderController(req: Request, res: Re
         }
 
     } catch(err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
 }
     
@@ -83,7 +80,7 @@ export async function loginFlowiderController(req: Request, res: Response){
         });
 
         // validations
-        if(!flowider) throw new Error("Username doesn't exist!");
+        if(!flowider) res.status(404).send("Username doesn't exist!");
         if(flowider){
             bcrypt.compare(password, flowider["password"], (bcErr, bcRes) => {
                 if (bcErr) throw bcErr.message;
@@ -106,7 +103,7 @@ export async function loginFlowiderController(req: Request, res: Response){
             })
         }
     } catch (err: any) {
-        throw new Error(err.message);
+        res.status(err.status).send(err.message);
     }
     
 }
@@ -117,7 +114,7 @@ export async function getFlowiderByIdController(req: Request, res: Response) {
         where: { flowider_id: (req as any).user.flowider_id } 
     });
 
-    if(!flowider) throw new Error("Flowider account doesn't exist!");
+    if(!flowider) res.status(404).send("Flowider account doesn't exist!");
     if(flowider){
         res.status(200).json(flowider);
     }
@@ -130,6 +127,6 @@ export async function getAllFlowiderController(req: Request, res: Response) {
         res.status(200).json(allFlowiders);
         
     } catch(err: any) {
-        throw new Error(err);
+        res.status(err.status).send(err.message);
     }
 }
