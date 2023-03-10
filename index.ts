@@ -1,13 +1,16 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import cron from "node-cron";
 import { connectDB } from './config/configDB';
+import { createTimeSlotForAllDesksRoutine } from './utils/timeslotUtils';
 
 // import * as userRoutes from "./routes/user.route";
 const userRoutes =  require('./routes/user.route');
 const flowiderRoutes = require('./routes/flowider.route');
 const placeRoutes = require('./routes/place.route');
 const deskRoutes = require('./routes/desk.route');
+const timeslotRoutes = require('./routes/timeslot.route');
 const backdoorRoutes = require('./routes/backdoor.route');
 
 // invoke dependencies
@@ -43,8 +46,16 @@ app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/flowider', flowiderRoutes);
 app.use('/api/v1/place', placeRoutes);
 app.use('/api/v1/desk', deskRoutes);
+app.use('/api/v1/timeslot', timeslotRoutes)
 // backdoor
 app.use('/api/backdoor', backdoorRoutes);
+// scheduled function
+const MIDNIGHT = "0 0 0 * * *";
+const FIFTEEN_SEC = "*/15 * * * * * *";
+cron.schedule(MIDNIGHT, async () => {
+    await createTimeSlotForAllDesksRoutine();
+    // console.log("Running node-cron");
+})
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -8,6 +8,7 @@ import ImagePool from "../models/ImagePool.model";
 // utils
 import { deleteImage, uploadImage } from "../utils/uploadImage";
 import { imageList } from "../utils/imageList";
+import { createTimeSlotForDeskSingle } from "../utils/timeslotUtils";
 
 export async function createDeskController(req: Request, res: Response) {
     try {
@@ -29,9 +30,11 @@ export async function createDeskController(req: Request, res: Response) {
         });
 
         if(createdDesk) {
+            const generateNewTimeSlot = await createTimeSlotForDeskSingle((createdDesk as any).desk_id);
             res.status(201).json({
                 status: "Desk has been created successfully!",
-                desk_info: createdDesk 
+                desk_info: createdDesk,
+                // timeslot: generateNewTimeSlot
             })
         }
 
@@ -112,9 +115,7 @@ export async function deleteDeskByIdController(req: Request, res: Response) {
         const result = await Desk.findOne({
             where: { desk_id: deskId }
         });
-
-        console.log(result);
-
+        
         if(result) {
             const images = await ImagePool.findAll({
                 where: {

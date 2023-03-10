@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { sequelize } from "../config/configDB";
 
+// models
 import Amenity from "../models/Amenity.model";
 import ImagePool from "../models/ImagePool.model";
 import Specification from "../models/Specification.model";
