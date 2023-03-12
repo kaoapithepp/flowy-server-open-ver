@@ -42,7 +42,8 @@ export async function registerUserController(req: Request, res: Response) {
         console.log(user);
 
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Registration failed!");
+        throw new Error("Registration failed!");
     }
 }
 
@@ -78,21 +79,27 @@ export async function loginUserController(req: Request, res: Response){
             })
         }
     } catch (err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Log in failed!");
+        throw new Error("Log in failed!");
     }
     
 }
 
 export async function getUserByIdController(req: Request, res: Response) {
-    console.log();
-    const user = await User.findOne({
-        attributes: { exclude: ['password'] }, 
-        where: { user_id: (req as any).user.user_id } 
-    });
+    try {
 
-    if(!user) res.status(404).send("Username doesn't exist!");
-    if(user){
-        res.status(200).json(user);
+        const user = await User.findOne({
+            attributes: { exclude: ['password'] }, 
+            where: { user_id: (req as any).user.user_id } 
+        });
+        
+        if(!user) res.status(404).send("Username doesn't exist!");
+        if(user){
+            res.status(200).json(user);
+        }
+    } catch(err: any) {
+        res.status(400).send("Get user by id failed!");
+        throw new Error("Get user by id failed!");
     }
 }
 
@@ -105,7 +112,7 @@ export async function getAllUserController(req: Request, res: Response) {
         res.status(200).json(allUsers);
         
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send(err.message);
     }
 }
 
@@ -133,6 +140,7 @@ export async function uploadProfileImageUserController(req: Request, res: Respon
         }
 
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Upload profile failed!");
+        throw new Error("Upload profile failed!");
     }
 }

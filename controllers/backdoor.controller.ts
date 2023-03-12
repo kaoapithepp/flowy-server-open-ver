@@ -15,7 +15,8 @@ export async function getAllAmenityBackdoor(req: Request, res: Response) {
         }
         
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Get all amenity failed!");
+        throw new Error("Get all amenity failed!");
     }
 }
 
@@ -28,7 +29,8 @@ export async function getAllSpecBackdoor(req: Request, res: Response) {
         }
         
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Get all specs failed!");
+        throw new Error("Get all specs failed!");
     }
 }
 
@@ -41,6 +43,7 @@ export async function getAllImagesBackdoor(req: Request, res: Response) {
         }
         
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Get all images failed!");
+        throw new Error("Get all images failed!");
     }
 }

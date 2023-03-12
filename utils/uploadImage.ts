@@ -35,7 +35,8 @@ export async function uploadImage(req: Request, res: Response, next: NextFunctio
         return downloadURLs;
 
     } catch (err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Upload image failed!");
+        throw new Error("Upload image failed!");
     }
 }
 
@@ -47,6 +48,6 @@ export async function deleteImage(imageURI: any){
         return;
     })
     .catch(err => {
-        return new Error(err.message);
+        throw new Error("Delete image failed!");
     })
 }

@@ -69,7 +69,8 @@ export async function createPlaceController(req: Request, res: Response) {
         }
 
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Creating place failed!");
+        throw new Error("Creating place failed!");
     }
 }
 
@@ -101,7 +102,8 @@ export async function uploadPlaceImagesController(req: Request, res: Response, n
         }
 
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Uploading place's images failed!");
+        throw new Error("Uploading place's images failed!");
     }
 }
 
@@ -142,7 +144,8 @@ export async function getAllBelongPlaceController(req: Request, res: Response) {
         });
 
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Get all belong place failed!");
+        throw new Error("Get all belong place failed!");
     }
 }
 
@@ -191,7 +194,8 @@ export async function getPlaceByIdController(req: Request, res: Response) {
         }
         
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Get place by id failed!");
+        throw new Error("Get place by id failed!");
     }
 }
 
@@ -233,7 +237,8 @@ export async function deletePlaceByIdController(req: Request, res: Response) {
         }
         
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Delete place failed!");
+        throw new Error("Delete place failed!");
     }
 }
 
@@ -275,6 +280,6 @@ export async function getAllPlacesNoAuthController(req: Request, res: Response) 
         }
         
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send(err.message);
     }
 };

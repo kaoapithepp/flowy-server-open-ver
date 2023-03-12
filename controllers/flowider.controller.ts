@@ -38,7 +38,8 @@ export async function registerFlowiderController(req: Request, res: Response) {
         }
 
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("registerFlowiderController failed!");
+        throw new Error("registerFlowiderController failed!");
     }
 }
 
@@ -66,7 +67,8 @@ export async function uploadProfileImageFlowiderController(req: Request, res: Re
         }
 
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("uploadProfileImageFlowiderController failed!");
+        throw new Error("uploadProfileImageFlowiderController failed!");
     }
 }
     
@@ -103,7 +105,8 @@ export async function loginFlowiderController(req: Request, res: Response){
             })
         }
     } catch (err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("loginFlowiderController failed!");
+        throw new Error("loginFlowiderController failed!");
     }
     
 }
@@ -127,6 +130,7 @@ export async function getAllFlowiderController(req: Request, res: Response) {
         res.status(200).json(allFlowiders);
         
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("getAllFlowiderController failed!");
+        throw new Error("getAllFlowiderController failed!");
     }
 }

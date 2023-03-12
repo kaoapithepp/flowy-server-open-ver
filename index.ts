@@ -3,8 +3,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cron from "node-cron";
 import { connectDB } from './config/configDB';
+
+// utils
 import { createTimeSlotForAllDesksRoutine } from './utils/timeslotUtils';
-import { makingStripePayment } from './utils/stripePayment';
 
 // import * as userRoutes from "./routes/user.route";
 const userRoutes =  require('./routes/user.route');
@@ -12,6 +13,7 @@ const flowiderRoutes = require('./routes/flowider.route');
 const placeRoutes = require('./routes/place.route');
 const deskRoutes = require('./routes/desk.route');
 const timeslotRoutes = require('./routes/timeslot.route');
+const bookingRoutes = require('./routes/booking.route');
 const backdoorRoutes = require('./routes/backdoor.route');
 
 // invoke dependencies
@@ -48,7 +50,7 @@ app.use('/api/v1/flowider', flowiderRoutes);
 app.use('/api/v1/place', placeRoutes);
 app.use('/api/v1/desk', deskRoutes);
 app.use('/api/v1/timeslot', timeslotRoutes);
-app.post('/api/v1/stripe-test', makingStripePayment);
+app.use('/api/v1/booking', bookingRoutes);
 // backdoor
 app.use('/api/backdoor', backdoorRoutes);
 // scheduled function

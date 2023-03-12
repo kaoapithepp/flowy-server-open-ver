@@ -2,33 +2,44 @@ import { Request, Response } from "express";
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-function calculateOrderAmount(items: number) {
-    return 60*items;
+async function calculateOrderAmount(srcPrice: number) {
+    return srcPrice*100;
 }
 
-export const paymentIntent = async (items: number) => {
-    const clientSecret = await stripe.paymentIntents.create({
-        amount: 199999,
+export const paymentIntent = async (price: number) => {
+    const paymentOrder = await stripe.paymentIntents.create({
+        amount: await calculateOrderAmount(price),
         currency: "thb",
         automatic_payment_methods: {
             enabled: true,
         },
     });
 
-    return clientSecret;
+    return paymentOrder;
 }
 
-export const makingStripePayment = async (req: Request, res: Response) => {
+export const makingStripePayment = async (totalAmt: number) => {
     try {
-        // const { items } = req.body;
-        const clientSecret = await paymentIntent(1);
+        const purchaseOrder = await paymentIntent(totalAmt);
 
-        res.send({
-            amount: clientSecret.amount,
-            clientSecret: clientSecret.client_secret
-        });
+        return {
+            id: purchaseOrder.id,
+            amount: purchaseOrder.amount,
+            clientSecret: purchaseOrder.client_secret
+        };
 
     } catch (err: any) {
-        res.status(err.status).send(err.message);
+        throw new Error(err.message);
+    }
+}
+
+export const cancelingStripePayment = async (paymentIntentId: string) => {
+    try {
+        const cancelOrder = await stripe.paymentIntents.cancel(paymentIntentId);
+
+        return cancelOrder.status;
+
+    } catch (err: any) {
+        throw new Error(err.message);
     }
 }

@@ -39,7 +39,8 @@ export async function createDeskController(req: Request, res: Response) {
         }
 
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Creating desk failed!");
+        throw new Error("Creating desk failed!");
     }
 }
 
@@ -71,7 +72,8 @@ export async function uploadDeskImagesController(req: Request, res: Response, ne
         }
 
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("Upload desk's images failed!");
+        throw new Error("Upload desk's images failed!");
     }
 }
 
@@ -105,7 +107,8 @@ export async function getDeskByIdController(req: Request, res: Response) {
         }
 
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("getDeskByIdController failed");
+        throw new Error("getDeskByIdController failed");
     }
 }
 
@@ -146,7 +149,8 @@ export async function deleteDeskByIdController(req: Request, res: Response) {
             })
         }
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("deleteDeskByIdController failed");
+        throw new Error("deleteDeskByIdController failed");
     }
 }
 
@@ -192,7 +196,8 @@ export async function getAllDesksByPlaceIdController(req: Request, res: Response
 
         
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("getAllDesksByPlaceIdController failed");
+        throw new Error("getAllDesksByPlaceIdController failed");
     }
 }
 
@@ -203,6 +208,7 @@ export async function getAllDesksNoAuthController(req: Request, res: Response) {
         res.status(200).json(results);
         
     } catch(err: any) {
-        res.status(err.status).send(err.message);
+        res.status(400).send("getAllDesksNoAuthController failed");
+        throw new Error("getAllDesksNoAuthController failed");
     }
 }
