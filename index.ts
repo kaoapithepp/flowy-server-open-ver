@@ -59,6 +59,8 @@ const FIFTEEN_SEC = "*/15 * * * * * *";
 cron.schedule(MIDNIGHT, async () => {
     await createTimeSlotForAllDesksRoutine();
     // console.log("Running node-cron");
+}, {
+    timezone: "Asia/Bangkok"
 })
 
 const PORT = process.env.PORT || 5000;

@@ -47,3 +47,19 @@ export async function getAllImagesBackdoor(req: Request, res: Response) {
         throw new Error("Get all images failed!");
     }
 }
+
+export async function getAllTimeslot(req: Request, res: Response){
+    try {
+        const [result] = await sequelize.query(`
+            SELECT *
+            FROM Timeslot
+            WHERE SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 1, 10)
+                = SUBSTRING(CONVERT_TZ(\`createdAt\`, '+00:00', '+07:00'), 1, 10)
+        `);
+
+        res.send(result);
+    } catch(err: any) {
+        res.status(400).send("Get all timeslots failed!");
+        throw new Error("Get all timeslots failed!");
+    }
+}

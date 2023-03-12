@@ -7,16 +7,16 @@ import Timeslot from "../models/Timeslot.model";
 
 export async function getAllTimeSlotByDeskId(req: Request, res: Response) {
     const deskId = req.params.deskId;
-    const currentDate = new Date().toISOString().substr(0,10);
     try {
         const [resultsTimeslot] = await sequelize.query(`
             SELECT *
             FROM Timeslot
-            WHERE createdAt LIKE ?
-                AND desk_id = ?
+            WHERE desk_id = ?
+                AND SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 1, 10)
+                = SUBSTRING(CONVERT_TZ(\`createdAt\`, '+00:00', '+07:00'), 1, 10)
             ORDER BY orderNo ASC;
         `, {
-            replacements: [`${currentDate}%`, deskId]
+            replacements: [deskId]
         })
 
         res.status(200).send(resultsTimeslot);

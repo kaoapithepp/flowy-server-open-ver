@@ -16,16 +16,18 @@ export const sequelize = new Sequelize(
             idle: 30000
         },
         dialectOptions: {
-            ssl: "Amazon RDS"
+            ssl: "Amazon RDS",
+            // useUTC: false
         },
         logging: console.log,
+        // timezone: "+07:00"
     }
 );
 
 export const connectDB = async () => {
     try {
         await sequelize.authenticate();
-        await sequelize.sync({ alter: false, force: false });
+        await sequelize.sync({ alter: true, force: false });
         console.log('AWS RDS has been established and synced successfully.');
         // sequelize.close();
     } catch (error) {
