@@ -21,14 +21,14 @@ router.route("/").get(userAuth, getBookingDetailByUserIdController);
 // get a booking order by bookId
 router.route("/:id").get(userAuth, getEachBookingDetailByIdController)
 
-// get booking detail after completed
-router.route("/:id").put(userAuth, retreiveBookingDetailAfterCompletedByIdController);
-
 // initPay by id
-router.route("/:id").post(userAuth, initPayByBookingIdController);
+router.route("/init/:id").post(userAuth, initPayByBookingIdController);
+
+// confirm booking and get booking detail after completed
+router.route("/confirm/:id").put(userAuth, retreiveBookingDetailAfterCompletedByIdController);
 
 // update payment status to canceled
-router.route("/:id").put(userAuth, cancelPayByBookingIdController);
+router.route("/cancel/:id").put(userAuth, cancelPayByBookingIdController);
 
 
 module.exports = router;
