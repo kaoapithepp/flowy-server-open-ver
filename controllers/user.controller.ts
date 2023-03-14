@@ -20,8 +20,8 @@ export async function registerUserController(req: Request, res: Response) {
         });
 
         // validations
-        if(isUserExist) res.status(400).send("Username already exists!");
-        if(!password || !tel_no) res.status(400).send("Please provide all necessary information completely.");
+        if(isUserExist) res.status(403).send("Username already exists!");
+        if(!password || !tel_no) res.status(403).send("Please provide all necessary information completely.");
 
         const user = await User.create({
             first_name: req.body.first_name,
@@ -38,8 +38,6 @@ export async function registerUserController(req: Request, res: Response) {
         } else {
             res.status(400).send("Bad request!");
         }
-
-        console.log(user);
 
     } catch(err: any) {
         res.status(400).send("Registration failed!");
@@ -62,10 +60,7 @@ export async function loginUserController(req: Request, res: Response){
                 if (bcErr) throw bcErr.message;
 
                 if (!bcRes) {
-                    res.status(403).send({
-                        status: "invalid",
-                        message: "Wrong password!"
-                    })
+                    res.status(403).send("Wrong password!")
                 }
 
                 if (bcRes) {
@@ -73,7 +68,7 @@ export async function loginUserController(req: Request, res: Response){
                         status: "ok",
                         token: generateToken(user["user_id"]),
                         // development
-                        flowiderInfo: user
+                        // flowiderInfo: user
                     })
                 }
             })
@@ -111,6 +106,24 @@ export async function getAllUserController(req: Request, res: Response) {
 
         res.status(200).json(allUsers);
         
+    } catch(err: any) {
+        res.status(400).send(err.message);
+    }
+}
+
+export async function deleteUserByIdController(req: Request, res: Response) {
+    const user_id = req.params.id;
+    try {
+        const deletedUser = await User.destroy({
+            where: {
+                user_id: user_id
+            },
+            force: true
+        })
+
+        res.send({
+            message: `User ${user_id} deleted.`
+        })
     } catch(err: any) {
         res.status(400).send(err.message);
     }

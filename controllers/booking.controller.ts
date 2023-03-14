@@ -5,6 +5,7 @@ import { Op } from "sequelize";
 import Booking from "../models/Booking.model";
 import Timeslot from "../models/Timeslot.model";
 import Place from "../models/Place.model";
+import User from "../models/User.model";
 
 // interfaces
 import { IUser } from "../interfaces/iuser.interface";
@@ -83,9 +84,16 @@ export async function initPayByBookingIdController(req: Request, res: Response) 
                 place_id: (bookingOrder as any).place_id
             },
             attributes: ['unit_price']
-        })
+        });
 
-        const createdPurchaseOrder = await makingStripePayment(bookingOrder.total_bk_price)
+        const findUserEmail: any = await User.findOne({
+            where: {
+                user_id: user_id
+            },
+            attributes: ['email']
+        });
+
+        const createdPurchaseOrder = await makingStripePayment(bookingOrder.total_bk_price, findUserEmail.email)
         
         if(!bookingOrder){
             res.status(404).send("Looking booking order not found!");
@@ -167,3 +175,158 @@ export async function cancelPayByBookingIdController(req: Request, res: Response
         res.status(400).send(err.message);
     }
 }
+
+export async function completedPayByBookingIdController(req: Request, res: Response) {
+    const { id } = req.params;
+
+    try {
+            const foundBookingOrder: any = await Booking.findOne({
+                where: {
+                    booking_id: id
+                }
+            })
+
+            foundBookingOrder.status = "completed";
+
+            await foundBookingOrder.save();
+
+            const [foundTimeSlots, metadata] = await sequelize.query(`
+                SELECT timeslot_id
+                FROM Timeslot
+                JOIN Booking
+                    ON Booking.desk_id = Timeslot.desk_id
+                WHERE Booking.booking_id = ?
+                    AND Timeslot.status = "pending"
+            `, {
+                replacements: [id]
+            })
+
+            await Promise.all(foundTimeSlots.map(async (timeslot: any, key: any) => {
+                const foundTimeslot: any = await Timeslot.findOne({
+                    where: {
+                        timeslot_id: timeslot.timeslot_id
+                    }
+                })
+
+                foundTimeslot.status = "occupied";
+
+                await foundTimeslot.save()
+            }))
+
+            res.status(201).send({
+                status: "OK",
+                message: "Booking completion successful."
+            });
+
+    } catch(err: any) {
+        res.status(400).send(err.message);
+    }
+}
+
+export async function retreiveBookingDetailAfterCompletedByIdController(req: Request, res: Response){
+    const { user_id } = (req as CustomRequest).user;
+    const booking_id = req.params.id;
+
+    try {
+        const foundBookingOrder: any = await Booking.findOne({
+            where: {
+                booking_id: booking_id
+            }
+        })
+
+        foundBookingOrder.status = "completed";
+
+        await foundBookingOrder.save();
+
+        const [foundTimeSlots, metadata] = await sequelize.query(`
+            SELECT timeslot_id
+            FROM Timeslot
+            JOIN Booking
+                ON Booking.desk_id = Timeslot.desk_id
+            WHERE Booking.booking_id = ?
+                AND Timeslot.status = "pending"
+        `, {
+            replacements: [booking_id]
+        })
+
+        await Promise.all(foundTimeSlots.map(async (timeslot: any, key: any) => {
+            const foundTimeslot: any = await Timeslot.findOne({
+                where: {
+                    timeslot_id: timeslot.timeslot_id
+                }
+            })
+
+            foundTimeslot.status = "occupied";
+
+            await foundTimeslot.save()
+        }))
+
+        const [bookingJoinWithPlace]: any = await sequelize.query(`
+            SELECT *
+            FROM Booking
+            JOIN (SELECT place_name, place_id, description FROM Place) AS Place ON Booking.place_id = Place.place_id
+            JOIN (SELECT desk_name, desk_id FROM Desk) AS Desk ON Booking.desk_id = Desk.desk_id
+            WHERE Booking.user_id = ?
+                AND Booking.booking_id = ?
+        `, {
+            replacements: [user_id, booking_id]
+        })
+
+        if(!bookingJoinWithPlace) res.status(404).send("Booking order not found!");
+
+        res.status(200).send(bookingJoinWithPlace);
+
+    } catch(err: any) {
+        res.status(400).send(err.message);
+    }
+}
+
+export async function getBookingDetailByUserIdController(req: Request, res: Response){
+    const { user_id } = (req as CustomRequest).user;
+
+    try {
+        const [bookingJoinWithPlace]: any = await sequelize.query(`
+            SELECT *
+            FROM Booking
+            JOIN (SELECT place_name, place_id, description FROM Place) AS Place ON Booking.place_id = Place.place_id
+            JOIN (SELECT desk_name, desk_id FROM Desk) AS Desk ON Booking.desk_id = Desk.desk_id
+            WHERE Booking.user_id = ?
+            ORDER BY createdAt DESC
+        `, {
+            replacements: [user_id]
+        })
+
+        if(!bookingJoinWithPlace) res.status(404).send("Booking order not found!");
+
+        res.status(200).send(bookingJoinWithPlace);
+
+    } catch(err: any) {
+        res.status(400).send(err.message);
+    }
+} 
+
+export async function getEachBookingDetailByIdController(req: Request, res: Response){
+    const { user_id } = (req as CustomRequest).user;
+    const booking_id = req.params.id;
+
+    try {
+        const [bookingJoinWithPlace]: any = await sequelize.query(`
+            SELECT *
+            FROM Booking
+            JOIN (SELECT place_name, place_id, description, lat_geo, long_geo FROM Place) AS Place ON Booking.place_id = Place.place_id
+            JOIN (SELECT desk_name, desk_id FROM Desk) AS Desk ON Booking.desk_id = Desk.desk_id
+            WHERE Booking.user_id = ?
+                AND Booking.booking_id = ?
+            ORDER BY createdAt DESC
+        `, {
+            replacements: [user_id, booking_id]
+        })
+
+        if(!bookingJoinWithPlace) res.status(404).send("Booking order not found!");
+
+        res.status(200).send(bookingJoinWithPlace);
+
+    } catch(err: any) {
+        res.status(400).send(err.message);
+    }
+} 

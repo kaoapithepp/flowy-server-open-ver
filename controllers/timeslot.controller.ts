@@ -5,17 +5,32 @@ import { sequelize } from "../config/configDB";
 // models
 import Timeslot from "../models/Timeslot.model";
 
+/*
+    Passed start_time's timeslot will not appear!
+*/
+
+const devQuery = `
+    SELECT *
+    FROM Timeslot
+    WHERE desk_id = ?
+        AND SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 1, 10)
+        = SUBSTRING(CONVERT_TZ(\`createdAt\`, '+00:00', '+07:00'), 1, 10)
+    ORDER BY orderNo ASC;
+`;
+
+const productionQuery = `
+    SELECT *
+    FROM Timeslot
+    WHERE desk_id = ?
+        AND SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 1, 10)
+        = SUBSTRING(CONVERT_TZ(\`createdAt\`, '+00:00', '+07:00'), 1, 10)
+        AND CAST(\`start_time\` as DECIMAL) > SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 12, 2)
+    ORDER BY orderNo ASC;
+`;
 export async function getAllTimeSlotByDeskId(req: Request, res: Response) {
     const deskId = req.params.deskId;
     try {
-        const [resultsTimeslot] = await sequelize.query(`
-            SELECT *
-            FROM Timeslot
-            WHERE desk_id = ?
-                AND SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 1, 10)
-                = SUBSTRING(CONVERT_TZ(\`createdAt\`, '+00:00', '+07:00'), 1, 10)
-            ORDER BY orderNo ASC;
-        `, {
+        const [resultsTimeslot] = await sequelize.query(devQuery, {
             replacements: [deskId]
         })
 

@@ -6,7 +6,8 @@ import {
     getAllUserController, 
     loginUserController,
     getUserByIdController, 
-    uploadProfileImageUserController} from "../controllers/user.controller";
+    uploadProfileImageUserController,
+    deleteUserByIdController} from "../controllers/user.controller";
 
 import { userAuth } from "../middlewares/user.auth";
 
@@ -20,6 +21,7 @@ router.route("/login").post(loginUserController);
 
 /* NO AUTH: get all flowiders */
 router.route("/all").get(getAllUserController);
+router.route("/:id").delete(deleteUserByIdController);
 
 /* AUTH */
 // upload profile images

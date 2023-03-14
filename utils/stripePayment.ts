@@ -6,21 +6,22 @@ async function calculateOrderAmount(srcPrice: number) {
     return srcPrice*100;
 }
 
-export const paymentIntent = async (price: number) => {
+export const paymentIntent = async (price: number, email: string) => {
     const paymentOrder = await stripe.paymentIntents.create({
         amount: await calculateOrderAmount(price),
         currency: "thb",
         automatic_payment_methods: {
             enabled: true,
         },
+        receipt_email: email
     });
 
     return paymentOrder;
 }
 
-export const makingStripePayment = async (totalAmt: number) => {
+export const makingStripePayment = async (totalAmt: number, sendToEmail: string) => {
     try {
-        const purchaseOrder = await paymentIntent(totalAmt);
+        const purchaseOrder = await paymentIntent(totalAmt, sendToEmail);
 
         return {
             id: purchaseOrder.id,
