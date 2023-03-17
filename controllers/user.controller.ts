@@ -8,7 +8,7 @@ import User from "../models/User.model";
 import { IUser } from "../interfaces/iuser.interface";
 
 // utils
-import generateToken from "../utils/generateToken";
+import { generateTokenForClient } from "../utils/generateToken";
 import { uploadImage } from "../utils/uploadImage";
 
 export async function registerUserController(req: Request, res: Response) {
@@ -66,7 +66,7 @@ export async function loginUserController(req: Request, res: Response){
                 if (bcRes) {
                     return res.status(201).send({
                         status: "ok",
-                        token: generateToken(user["user_id"]),
+                        token: generateTokenForClient(user["user_id"]),
                         // development
                         // flowiderInfo: user
                     })

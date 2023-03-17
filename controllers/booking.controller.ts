@@ -26,23 +26,6 @@ export async function createBookingOrderController(req: Request, res: Response){
     } = req.body;
 
     try {
-        const changeSelectedTimeSlotsStatus = await Promise.all(
-            selectedTimeSlots.map(async (timeslot: any) => {
-                const foundTimeSlot: any = await Timeslot.findOne({
-                    where: {
-                        timeslot_id: timeslot.timeslot_id
-                    }
-                })
-
-                foundTimeSlot.status = "pending";
-                foundTimeSlot.occupied_seat = total_bk_seat;
-
-                await foundTimeSlot.save();
-
-                return foundTimeSlot;
-            })
-        )
-
         const searchedUnitPrice = await Place.findOne({
             where: {
                 place_id: place_id
@@ -58,6 +41,24 @@ export async function createBookingOrderController(req: Request, res: Response){
             total_bk_seat: total_bk_seat,
             total_bk_price: await priceCalculation((searchedUnitPrice as any).unit_price, total_bk_seat, selectedTimeSlots.length)
         });
+
+        const changeSelectedTimeSlotsStatus = await Promise.all(
+            selectedTimeSlots.map(async (timeslot: any) => {
+                const foundTimeSlot: any = await Timeslot.findOne({
+                    where: {
+                        timeslot_id: timeslot.timeslot_id
+                    }
+                })
+
+                foundTimeSlot.status = "pending";
+                foundTimeSlot.booking_id = createdBooking.booking_id;
+                foundTimeSlot.occupied_seat = total_bk_seat;
+
+                await foundTimeSlot.save();
+
+                return foundTimeSlot;
+            })
+        );
 
         res.status(201).send(createdBooking);
 
@@ -117,7 +118,7 @@ export async function initPayByBookingIdController(req: Request, res: Response) 
         
     } catch (err: any) {
         res.status(400).send("Init purchasement failed!");
-        throw new Error("Init purchasement failed!");
+        throw new Error(err.message);
     }
 }
 

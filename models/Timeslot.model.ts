@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/configDB";
+import Booking from "./Booking.model";
 import Desk from "./Desk.model";
 
 const Timeslot = sequelize.define('Timeslot', {
@@ -26,6 +27,10 @@ const Timeslot = sequelize.define('Timeslot', {
         type: DataTypes.INTEGER,
         allowNull: true
     },
+    booking_id: {
+        type: DataTypes.UUID,
+        allowNull: true
+    },
     status: {
         type: DataTypes.ENUM('vacant', 'pending', 'occupied'),
         defaultValue: 'vacant',
@@ -49,5 +54,6 @@ Desk.hasMany(Timeslot, {
     hooks: true
 });
 Timeslot.belongsTo(Desk);
+
 
 export default Timeslot;

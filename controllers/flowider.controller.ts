@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import Flowider from "../models/Flowider.model";
 
 // utils
-import generateToken from "../utils/generateToken";
+import { generateTokenForFlowider } from "../utils/generateToken";
 import { uploadImage } from "../utils/uploadImage";
 import { IFlowider } from "../interfaces/iflowider.interface";
 
@@ -97,7 +97,7 @@ export async function loginFlowiderController(req: Request, res: Response){
                 if (bcRes) {
                     return res.status(201).send({
                         status: "ok",
-                        token: generateToken(flowider["flowider_id"]),
+                        token: generateTokenForFlowider(flowider["flowider_id"]),
                         // development
                         flowiderInfo: flowider
                     })

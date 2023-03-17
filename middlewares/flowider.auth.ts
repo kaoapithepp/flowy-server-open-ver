@@ -20,7 +20,7 @@ export async function flowiderAuth(req: Request, res: Response, next: NextFuncti
             token = req.headers.authorization.split(" ")[1];
             // console.log('Splitted:' + token);
             
-            const decoded = jwt.verify(token, `${process.env.JWT_SECRET}`) as JwtPayload;
+            const decoded = jwt.verify(token, `${process.env.JWT_SECRET_FLOWIDER}`) as JwtPayload;
             // console.log('Decoded:' + decoded.id);
 
             (req as CustomRequest).user = await Flowider.findOne({ where: { flowider_id: decoded.id}});
@@ -28,7 +28,7 @@ export async function flowiderAuth(req: Request, res: Response, next: NextFuncti
             next();
 
         } catch(err: any) {
-            res.status(403).send("Not authorized, token failed.");
+            res.status(403).send("Not authorized, flowider token failed.");
         }
     }
 

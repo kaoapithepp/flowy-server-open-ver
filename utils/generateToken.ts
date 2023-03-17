@@ -1,10 +1,14 @@
 import jwt from 'jsonwebtoken';
 
-const generateToken = (id: string) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET as string, {
+export const generateTokenForClient = (id: string) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET_CLIENT as string, {
         expiresIn: "14d"
     })
 }
 
-export default generateToken;
+export const generateTokenForFlowider = (id: string) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET_FLOWIDER as string, {
+        expiresIn: "14d"
+    })
+}
 

@@ -11,6 +11,7 @@ import {createPlaceController,
 
 // protect
 import { flowiderAuth } from "../middlewares/flowider.auth";
+import { userAuth } from "../middlewares/user.auth";
 
 import { upload } from "../utils/uploadImage";
 
@@ -30,7 +31,7 @@ router.route("/place-img/:id").post(flowiderAuth, upload.array("image"), uploadP
 
 /* By ID */
 // get
-router.route("/:id").get(flowiderAuth, getPlaceByIdController);
+router.route("/:id").get(userAuth || flowiderAuth, getPlaceByIdController);
 // delete
 router.route("/:id").delete(flowiderAuth, deletePlaceByIdController);
 

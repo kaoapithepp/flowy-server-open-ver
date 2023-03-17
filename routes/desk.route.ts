@@ -10,6 +10,7 @@ import {createDeskController,
 
 // auth
 import { flowiderAuth } from "../middlewares/flowider.auth";
+import { userAuth } from "../middlewares/user.auth";
 
 // utils
 import { upload } from "../utils/uploadImage";
@@ -27,7 +28,7 @@ router.route("/desk-img/:id").post(flowiderAuth, upload.array("image"), uploadDe
 // get each desk
 router.route("/:id").get(flowiderAuth, getDeskByIdController);
 // get all desk by placeId
-router.route("/by-place/:placeId").get(flowiderAuth, getAllDesksByPlaceIdController);
+router.route("/by-place/:placeId").get(userAuth || flowiderAuth, getAllDesksByPlaceIdController);
 // delete
 router.route("/:id").delete(flowiderAuth, deleteDeskByIdController);
 

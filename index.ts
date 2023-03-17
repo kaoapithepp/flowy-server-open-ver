@@ -14,6 +14,7 @@ const placeRoutes = require('./routes/place.route');
 const deskRoutes = require('./routes/desk.route');
 const timeslotRoutes = require('./routes/timeslot.route');
 const bookingRoutes = require('./routes/booking.route');
+const scheduleRoutes = require('./routes/schedule.route');
 const backdoorRoutes = require('./routes/backdoor.route');
 
 // invoke dependencies
@@ -51,6 +52,7 @@ app.use('/api/v1/place', placeRoutes);
 app.use('/api/v1/desk', deskRoutes);
 app.use('/api/v1/timeslot', timeslotRoutes);
 app.use('/api/v1/booking', bookingRoutes);
+app.use('/api/v1/schedule', scheduleRoutes);
 // backdoor
 app.use('/api/backdoor', backdoorRoutes);
 // scheduled function

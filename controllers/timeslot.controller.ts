@@ -30,7 +30,7 @@ const productionQuery = `
 export async function getAllTimeSlotByDeskId(req: Request, res: Response) {
     const deskId = req.params.deskId;
     try {
-        const [resultsTimeslot] = await sequelize.query(devQuery, {
+        const [resultsTimeslot] = await sequelize.query(productionQuery, {
             replacements: [deskId]
         })
 
