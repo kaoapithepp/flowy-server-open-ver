@@ -286,7 +286,7 @@ export async function getAllPlacesNoAuthController(req: Request, res: Response) 
         if(queryResult) {
             Promise.all(queryResult.map(async (place: any, key, arr) => {
                 const resultSpecs = await Specification.findOne({
-                    attributes: ['isQuiet', 'isSmokable'],
+                    attributes: ['isQuiet', 'isSmokable', 'isAtmospheric', 'isLoudable'],
                     where: { place_id: place.place_id }
                 });
                 
