@@ -9,6 +9,8 @@ import { flatten2dLists } from "./flatten2dLists";
 export async function genereateTimeslotRecordEachDesk(elem: any){
   var startTime = Number(elem.open_hr.substr(0,2));
   var endTime = Number(elem.close_hr.substr(0,2));
+  var startMinute = elem.open_hr.substr(2,3);
+  var endMinute = elem.close_hr.substr(2,3);
 
   const DAY_HR_FORMAT = 24;
   let itr = 0;
@@ -19,12 +21,12 @@ export async function genereateTimeslotRecordEachDesk(elem: any){
 
   function reformatHr(originalTime: number){
     if(originalTime < DAY_HR_FORMAT) {
-      return originalTime;
+      return originalTime < 10 ? `0${originalTime}`: originalTime;
     }
 
     if(originalTime >= DAY_HR_FORMAT) {
       const diff = originalTime - DAY_HR_FORMAT;
-      return String(diff).length == 1 ? `0${diff}`: diff;
+      return diff < 10 ? `0${diff}`: diff;
     }
   }
   
@@ -34,8 +36,8 @@ export async function genereateTimeslotRecordEachDesk(elem: any){
       status: 'vacant',
       orderNo: i+1,
       occupied_seat: 0,
-      start_time: `${reformatHr(startTime+i)}:00`,
-      end_time: `${reformatHr(startTime+i+1)}:00`
+      start_time: `${reformatHr(startTime+i)}${startMinute}`,
+      end_time: `${reformatHr(startTime+i+1)}${endMinute}`
     })
   }
 

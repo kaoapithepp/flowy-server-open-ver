@@ -10,13 +10,14 @@ import ImagePool from "../models/ImagePool.model";
 // utils
 import { deleteImage, uploadImage } from "../utils/uploadImage";
 import { imageList } from "../utils/imageList";
+import Desk from "../models/Desk.model";
 
 export async function createPlaceController(req: Request, res: Response) {
     try {
         const createdPlace = await Place.create({
             place_name: req.body.place_name,
-            lat_geo: req.body.lat_geo,
-            long_geo: req.body.long_geo,
+            // lat_geo: req.body.lat_geo,
+            // long_geo: req.body.long_geo,
             description: req.body.description,
             place_category: req.body.place_category,
             unit_price: req.body.unit_price,
@@ -27,29 +28,29 @@ export async function createPlaceController(req: Request, res: Response) {
         
         const createAmenity = await Amenity.create({
             place_id: (createdPlace as any).place_id,
-            hasPowerSupply: req.body.hasPowerSupply,
-            hasWifi: req.body.hasWifi,
-            hasRestroom: req.body.hasRestroom,
-            hasProjector: req.body.hasProjector,
-            hasHDMI: req.body.hasHDMI,
-            hasFlowiderCare: req.body.hasFlowiderCare,
-            hasAirCondition: req.body.hasAirCondition,
-            hasNapZone: req.body.hasNapZone,
-            hasSnackAndBeverage: req.body.hasSnackAndBeverage,
-            hasCCTVorSecurity: req.body.hasCCTVorSecurity
+            // hasPowerSupply: req.body.hasPowerSupply,
+            // hasWifi: req.body.hasWifi,
+            // hasRestroom: req.body.hasRestroom,
+            // hasProjector: req.body.hasProjector,
+            // hasHDMI: req.body.hasHDMI,
+            // hasFlowiderCare: req.body.hasFlowiderCare,
+            // hasAirCondition: req.body.hasAirCondition,
+            // hasNapZone: req.body.hasNapZone,
+            // hasSnackAndBeverage: req.body.hasSnackAndBeverage,
+            // hasCCTVorSecurity: req.body.hasCCTVorSecurity
         });
 
         const createSpec = await Specification.create({
             place_id: (createdPlace as any).place_id,
-            good_for: req.body.good_for,
-            most_suit_for: req.body.most_suit_for,
-            isQuiet: req.body.isQuiet,
-            isLoudable: req.body.isLoudable,
-            isAtmospheric: req.body.isAtmospheric,
-            isSmokable: req.body.isSmokable 
+            // good_for: req.body.good_for,
+            // most_suit_for: req.body.most_suit_for,
+            // isQuiet: req.body.isQuiet,
+            // isLoudable: req.body.isLoudable,
+            // isAtmospheric: req.body.isAtmospheric,
+            // isSmokable: req.body.isSmokable 
         });
 
-        const [results, metadata] = await sequelize.query(
+        const [results] = await sequelize.query(
             `
             SELECT *
             FROM Place
@@ -64,13 +65,13 @@ export async function createPlaceController(req: Request, res: Response) {
         if(createdPlace && createAmenity && createSpec) {
             res.status(201).json({
                 status: "Place has been created successfully!",
-                info: results
+                info: results[0]
             });
         }
 
     } catch(err: any) {
         res.status(400).send("Creating place failed!");
-        throw new Error("Creating place failed!");
+        throw new Error(err.message);
     }
 }
 
@@ -162,7 +163,7 @@ export async function getPlaceByIdController(req: Request, res: Response) {
 
         if(resultPlace) {
             const resultSpecs = await Specification.findOne({
-                attributes: ['isQuiet', 'isSmokable'],
+                attributes: ['isQuiet', 'isSmokable', 'isAtmospheric', 'isLoudable'],
                 where: { place_id: resultPlace.place_id }
             });
 
@@ -176,6 +177,16 @@ export async function getPlaceByIdController(req: Request, res: Response) {
                     owner_type: "place"
                 }
             })
+
+            const [resultDesks] = await sequelize.query(`
+                SELECT Desk.desk_id, Desk.desk_name, ImagePool.img_uri
+                FROM Desk
+                JOIN ImagePool ON Desk.desk_id = ImagePool.owner_id
+                WHERE Desk.place_id = ?
+            `, {
+                replacements: [placeId]
+            });
+
             res.status(201).json({
                 place_id: resultPlace.place_id,
                 place_name: resultPlace.place_name,
@@ -189,6 +200,7 @@ export async function getPlaceByIdController(req: Request, res: Response) {
                 work_hr: Number(resultPlace.close_hr.substr(0,2)) - Number(resultPlace.open_hr.substr(0,2)),
                 spec: resultSpecs,
                 amenity: resultAmenities,
+                desk: resultDesks,
                 image: imageList(resultPlaceImages as [], "img_uri")
             });
         }
@@ -196,6 +208,31 @@ export async function getPlaceByIdController(req: Request, res: Response) {
     } catch(err: any) {
         res.status(400).send("Get place by id failed!");
         throw new Error("Get place by id failed!");
+    }
+}
+
+export async function updatePlaceByIdController(req: Request, res: Response) {
+    const placeId = req.params.id;
+    const data = req.body;
+
+    try {
+        const foundPlace = await Place.findOne({
+            where: { place_id: placeId }
+        });
+
+        if(!foundPlace) res.status(404).send("Place not found!");
+
+        if(foundPlace) {
+            foundPlace.set(data);
+
+            foundPlace.save();
+
+            res.status(201).json(foundPlace);
+        }
+        
+    } catch(err: any) {
+        res.status(400).send("Update place failed!");
+        throw new Error(err.message);
     }
 }
 
@@ -283,3 +320,95 @@ export async function getAllPlacesNoAuthController(req: Request, res: Response) 
         res.status(400).send(err.message);
     }
 };
+
+export async function getSpecsByIdController(req: Request, res: Response) {
+    const placeId = req.params.id;
+    const data = req.body;
+
+    try {
+        const foundSpec = await Specification.findOne({
+            where: { place_id: placeId }
+        });
+
+        if(!foundSpec) res.status(404).send("Specification not found!");
+
+        if(foundSpec) {
+            res.status(201).json(foundSpec);
+        }
+        
+    } catch(err: any) {
+        res.status(400).send("Update place failed!");
+        throw new Error(err.message);
+    }
+}
+
+export async function updateSpecsByIdController(req: Request, res: Response) {
+    const placeId = req.params.id;
+    const data = req.body;
+
+    try {
+        const foundSpec = await Specification.findOne({
+            where: { place_id: placeId }
+        });
+
+        if(!foundSpec) res.status(404).send("Specification not found!");
+
+        if(foundSpec) {
+            foundSpec.set(data);
+
+            foundSpec.save();
+
+            res.status(201).json(foundSpec);
+        }
+        
+    } catch(err: any) {
+        res.status(400).send("Update place failed!");
+        throw new Error(err.message);
+    }
+}
+
+export async function getAmenitiesByIdController(req: Request, res: Response) {
+    const placeId = req.params.id;
+    const data = req.body;
+
+    try {
+        const foundAmenity = await Amenity.findOne({
+            where: { place_id: placeId }
+        });
+
+        if(!foundAmenity) res.status(404).send("Amenity not found!");
+
+        if(foundAmenity) {
+            res.status(201).json(foundAmenity);
+        }
+        
+    } catch(err: any) {
+        res.status(400).send("Update place failed!");
+        throw new Error(err.message);
+    }
+}
+
+export async function updateAmenitiesByIdController(req: Request, res: Response) {
+    const placeId = req.params.id;
+    const data = req.body;
+
+    try {
+        const foundAmenity = await Amenity.findOne({
+            where: { place_id: placeId }
+        });
+
+        if(!foundAmenity) res.status(404).send("Amenity not found!");
+
+        if(foundAmenity) {
+            foundAmenity.set(data);
+
+            foundAmenity.save();
+
+            res.status(201).json(foundAmenity);
+        }
+        
+    } catch(err: any) {
+        res.status(400).send("Update place failed!");
+        throw new Error(err.message);
+    }
+}

@@ -4,6 +4,9 @@ import bcrypt from "bcrypt";
 // models
 import Flowider from "../models/Flowider.model";
 
+// interface
+import { CustomRequest } from "../interfaces/iauth.interface";
+
 // utils
 import { generateTokenForFlowider } from "../utils/generateToken";
 import { uploadImage } from "../utils/uploadImage";
@@ -39,7 +42,7 @@ export async function registerFlowiderController(req: Request, res: Response) {
 
     } catch(err: any) {
         res.status(400).send("registerFlowiderController failed!");
-        throw new Error("registerFlowiderController failed!");
+        throw new Error(err.message);
     }
 }
 
@@ -68,7 +71,7 @@ export async function uploadProfileImageFlowiderController(req: Request, res: Re
 
     } catch(err: any) {
         res.status(400).send("uploadProfileImageFlowiderController failed!");
-        throw new Error("uploadProfileImageFlowiderController failed!");
+        throw new Error(err.message);
     }
 }
     
@@ -106,7 +109,7 @@ export async function loginFlowiderController(req: Request, res: Response){
         }
     } catch (err: any) {
         res.status(400).send("loginFlowiderController failed!");
-        throw new Error("loginFlowiderController failed!");
+        throw new Error(err.message);
     }
     
 }
@@ -123,6 +126,38 @@ export async function getFlowiderByIdController(req: Request, res: Response) {
     }
 }
 
+export async function updateFlowiderInfoController(req: Request, res: Response) {
+    const { flowider_id } =  (req as CustomRequest).user;
+    const data = req.body;
+    try {
+        let foundFlowder = await Flowider.findOne({
+            where: {
+                flowider_id: flowider_id
+            }
+        });
+
+        if(!foundFlowder) res.status(404).send("Flowider not found!");
+        if(foundFlowder){
+            foundFlowder.set({
+                first_name: data.first_name,
+                last_name: data.last_name,
+                tel_no: data.tel_no,
+                email: data.email,
+                bnk_acc: data.bnk_acc,
+                bnk_name: data.bnk_name
+            });
+
+            foundFlowder.save();
+
+            res.status(201).send(foundFlowder);
+        }
+
+    } catch(err: any) {
+        res.status(400).send("update Flowider information failed!");
+        throw new Error(err.message);
+    }
+}
+
 export async function getAllFlowiderController(req: Request, res: Response) {
     try {
         const allFlowiders = await Flowider.findAll();
@@ -131,6 +166,6 @@ export async function getAllFlowiderController(req: Request, res: Response) {
         
     } catch(err: any) {
         res.status(400).send("getAllFlowiderController failed!");
-        throw new Error("getAllFlowiderController failed!");
+        throw new Error(err.message);
     }
 }

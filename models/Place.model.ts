@@ -14,19 +14,19 @@ const Place = sequelize.define('Place', {
     },
     place_name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     lat_geo: {
         type: DataTypes.DOUBLE,
-        allowNull: false
+        allowNull: true
     },
     long_geo: {
         type: DataTypes.DOUBLE,
-        allowNull: false
+        allowNull: true
     },
     description: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: false
     },
     place_category: {
         type: DataTypes.ENUM('House/Privates', 'Hotel', 'Cafe'),

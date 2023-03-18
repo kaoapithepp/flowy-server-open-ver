@@ -6,7 +6,12 @@ import {createPlaceController,
         deletePlaceByIdController,
         getAllBelongPlaceController, 
         getAllPlacesNoAuthController,
+        getAmenitiesByIdController,
         getPlaceByIdController,
+        getSpecsByIdController,
+        updateAmenitiesByIdController,
+        updatePlaceByIdController,
+        updateSpecsByIdController,
         uploadPlaceImagesController} from "../controllers/place.controller";
 
 // protect
@@ -25,15 +30,30 @@ router.route("/").post(flowiderAuth, createPlaceController);
 // get all belong place
 router.route("/").get(flowiderAuth, getAllBelongPlaceController);
 
-// upload profile images
-router.route("/place-img/:id").post(flowiderAuth, upload.array("image"), uploadPlaceImagesController);
+// upload place images
+router.route("/place-img/f/:id").post(flowiderAuth, upload.array("image"), uploadPlaceImagesController);
 
 
-/* By ID */
+/* Place By ID */
 // get
-router.route("/:id").get(userAuth || flowiderAuth, getPlaceByIdController);
+router.route("/:id").get(userAuth, getPlaceByIdController);
+router.route("/f/:id").get(flowiderAuth, getPlaceByIdController);
+// update
+router.route("/f/:id").put(flowiderAuth, updatePlaceByIdController);
 // delete
-router.route("/:id").delete(flowiderAuth, deletePlaceByIdController);
+router.route("/f/:id").delete(flowiderAuth, deletePlaceByIdController);
+
+/* Spec By ID */
+// get
+router.route("/f/specs/:id").get(flowiderAuth, getSpecsByIdController);
+// update
+router.route("/f/specs/:id").put(flowiderAuth, updateSpecsByIdController);
+
+/* Amenity By ID */
+// get
+router.route("/f/amenities/:id").get(flowiderAuth, getAmenitiesByIdController);
+// update
+router.route("/f/amenities/:id").put(flowiderAuth, updateAmenitiesByIdController);
 
 
 

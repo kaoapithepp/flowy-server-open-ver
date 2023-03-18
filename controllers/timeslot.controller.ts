@@ -24,7 +24,7 @@ const productionQuery = `
     WHERE desk_id = ?
         AND SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 1, 10)
         = SUBSTRING(CONVERT_TZ(\`createdAt\`, '+00:00', '+07:00'), 1, 10)
-        AND CAST(\`start_time\` as DECIMAL) > SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 12, 2)
+        AND CAST(\`start_time\` as DECIMAL) > CAST(SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 12, 2) as DECIMAL)
     ORDER BY orderNo ASC;
 `;
 export async function getAllTimeSlotByDeskId(req: Request, res: Response) {

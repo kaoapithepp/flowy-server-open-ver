@@ -50,6 +50,9 @@ export async function getAllScheduleByPlaceIdController(req: Request, res: Respo
             ) as Timeslot ON Booking.booking_id = Timeslot.booking_id
             WHERE Flowider.flowider_id = ?
                 AND Place.place_id = ?
+                AND SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 1, 10)
+                    = SUBSTRING(CONVERT_TZ(\`createdAt\`, '+00:00', '+07:00'), 1, 10)
+                AND CAST(\`start_time\` as DECIMAL) > SUBSTRING(CONVERT_TZ(CURRENT_TIMESTAMP(), '+00:00', '+07:00'), 12, 2)
             GROUP BY Booking.booking_id
             ORDER BY orderNo ASC;
         `, {

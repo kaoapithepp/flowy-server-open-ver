@@ -73,7 +73,87 @@ export async function uploadDeskImagesController(req: Request, res: Response, ne
 
     } catch(err: any) {
         res.status(400).send("Upload desk's images failed!");
-        throw new Error("Upload desk's images failed!");
+        throw new Error(err.message);
+    }
+}
+
+export async function updateDeskImagesController(req: Request, res: Response, next: NextFunction){
+    const desk_id = req.params.id;
+    try {
+        
+        const image = await ImagePool.findAll({
+            where: {               
+                owner_id: desk_id,
+                owner_type: "desk"
+            }
+        })
+
+        if(image.length == 1){
+            res.status(200).send({
+                message: "The same image has been re-upload."
+            });
+        }
+
+        // res.send(image);
+        
+        if(image.length == 0) {
+            const imageURIs: string[] | any = await uploadImage(req, res, next);
+
+            const deskImageIntoPool = await Promise.all(
+                imageURIs.map((file: any) => {
+                    const insertImagePool = ImagePool.create({
+                        img_uri: file,
+                        owner_id: desk_id,
+                        owner_type: "desk"
+                    });
+    
+                    return insertImagePool;
+                })
+            )
+
+            if(deskImageIntoPool){
+                res.status(201).json({
+                    message: "Your attachment has been upload successfully.",
+                });
+            }
+        }
+
+    } catch(err: any) {
+        res.status(400).send("Update desk's images failed!");
+        throw new Error(err.message);
+    }
+}
+
+export async function deleteDeskImagesController(req: Request, res: Response, next: NextFunction){
+    const desk_id = req.params.id;
+    try {
+
+        const images = await ImagePool.findAll({
+            where: {               
+                owner_id: desk_id,
+                owner_type: "desk"
+            }
+        })
+
+        await Promise.all(images.map(async (image: any, key) => {
+            deleteImage(image.img_uri);
+        }))
+
+        await ImagePool.destroy({
+            where: {
+                owner_id: desk_id,
+                owner_type: "desk"
+            },
+            force: true
+        })
+
+        res.status(201).send({
+            message: "Deleted desk image successfully."
+        });
+
+    } catch(err: any) {
+        res.status(400).send("Delete desk's images failed!");
+        throw new Error(err.message);
     }
 }
 
@@ -85,7 +165,7 @@ export async function getDeskByIdController(req: Request, res: Response) {
         });
 
         if(!resultDesk){
-            res.status(404).send("Place not found!");
+            res.status(404).send("Desk not found!");
         }
 
         if(resultDesk) {
@@ -102,6 +182,7 @@ export async function getDeskByIdController(req: Request, res: Response) {
                 isHotDesk: resultDesk.isHotDesk,
                 min_seat: resultDesk.min_seat,
                 max_seat: resultDesk.max_seat,
+                place_id: resultDesk.place_id,
                 image: imageList(resultDeskImages as [], "img_uri")
             });
         }
@@ -112,7 +193,39 @@ export async function getDeskByIdController(req: Request, res: Response) {
     }
 }
 
-export async function deleteDeskByIdController(req: Request, res: Response) {
+export async function editDeskByIdController(req: Request, res: Response) {
+    const deskId = req.params.id;
+    const data = req.body;
+    try {
+        const resultDesk: any = await Desk.findOne({
+            where: { desk_id: deskId }
+        });
+
+        if(!resultDesk){
+            res.status(404).send("Desk not found!");
+        }
+
+        if(resultDesk) {
+            resultDesk.set({
+                desk_name: data.desk_name,
+                description: data.description,
+                isHotDesk: data.isHotDesk,
+                min_seat: data.min_seat,
+                max_seat: data.max_seat,
+            });
+
+            resultDesk.save();
+
+            res.status(201).json(resultDesk);
+        }
+
+    } catch(err: any) {
+        res.status(400).send("updateDeskByIdController failed");
+        throw new Error(err.message);
+    }
+}
+
+export async function removeDeskByIdController(req: Request, res: Response) {
     try {
         const deskId = req.params.id;
         const result = await Desk.findOne({

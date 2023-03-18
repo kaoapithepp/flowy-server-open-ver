@@ -6,7 +6,8 @@ import {
     getAllFlowiderController, 
     loginFlowiderController,
     getFlowiderByIdController, 
-    uploadProfileImageFlowiderController} from "../controllers/flowider.controller";
+    uploadProfileImageFlowiderController,
+    updateFlowiderInfoController} from "../controllers/flowider.controller";
 
 import { flowiderAuth } from "../middlewares/flowider.auth";
 
@@ -22,6 +23,8 @@ router.route("/login").post(loginFlowiderController);
 router.route("/all").get(getAllFlowiderController);
 
 /* AUTH */
+// update personal info
+router.route("/").put(flowiderAuth, updateFlowiderInfoController);
 // upload profile images
 router.route("/profile-img/:id").put(flowiderAuth, upload.array("image"), uploadProfileImageFlowiderController);
 
