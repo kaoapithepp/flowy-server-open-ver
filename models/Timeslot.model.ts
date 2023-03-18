@@ -46,7 +46,6 @@ const Timeslot = sequelize.define('Timeslot', {
 Desk.hasMany(Timeslot, {
     foreignKey: {
         name: 'desk_id',
-        type: DataTypes.UUID,
         allowNull: false
     },
     onDelete: 'CASCADE',

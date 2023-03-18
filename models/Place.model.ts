@@ -57,7 +57,6 @@ const Place = sequelize.define('Place', {
 Flowider.hasMany(Place, {
     foreignKey: {
         name: 'flowider_id',
-        type: DataTypes.UUID,
         allowNull: false
     },
     onDelete: 'CASCADE',

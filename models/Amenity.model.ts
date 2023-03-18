@@ -72,7 +72,6 @@ const Amenity = sequelize.define('Amenity', {
 Place.hasOne(Amenity, {
     foreignKey: {
         name: 'place_id',
-        type: DataTypes.UUID,
         allowNull: false
     },
     onDelete: 'CASCADE',

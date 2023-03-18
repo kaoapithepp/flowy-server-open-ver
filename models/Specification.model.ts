@@ -49,7 +49,6 @@ const Specification = sequelize.define('Specification', {
 Place.hasOne(Specification, {
     foreignKey: {
         name: 'place_id',
-        type: DataTypes.UUID,
         allowNull: false
     },
     onDelete: 'CASCADE',

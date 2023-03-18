@@ -44,7 +44,6 @@ const Desk = sequelize.define('Desk', {
 Place.hasMany(Desk, {
     foreignKey: {
         name: 'place_id',
-        type: DataTypes.UUID,
         allowNull: false
     },
     onDelete: 'CASCADE',
